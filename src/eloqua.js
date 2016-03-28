@@ -1,5 +1,10 @@
+// Initialize the Eloqua command queue at the global level
+// so that it's in the scope of our Ceros Event callback.
+var _elqQ = _elqQ || [];
+
+
 (function() {
-    if (!CerosSDK) {
+    if (typeof(CerosSDK) === "undefined") {
         var sdkScript = document.createElement('script');
         sdkScript.type = "text/javascript";
         sdkScript.async = true;
@@ -23,35 +28,27 @@
             console.error("Site ID is required for the Ceros Eloqua plugin.");
         }
 
-        // Initialize the Eloqua command queue and load the Eloqua script.
-        var _elqQ = _elqQ || [];
+        // Configure the Eloqua command queue and load the Eloqua script.
         _elqQ.push(['elqSetSiteId', 'siteId']);
         if (cookieDomain !== ""){
             _elqQ.push(['elqUseFirstPartyCookie', cookieDomain]);
         }
-        (function() {
-            function async_load() {
-                var s = document.createElement('script'); s.type =
-                    'text/javascript';
-                s.async = true;
-                s.src = '//img.en25.com/i/elqCfg.min.js';
-                var x = document.getElementsByTagName('script')[0];
-                x.parentNode.insertBefore(s, x);
-            }
-            if(window.addEventListener) window.addEventListener
-            ('DOMContentLoaded', async_load, false);
-            else if (window.attachEvent) window.attachEvent('onload',
-                async_load);
-        })();
+
+        var eloquaScript = document.createElement('script');
+        eloquaScript.type = "text/javascript";
+        eloquaScript.async = true;
+        eloquaScript.src = "//img.en25.com/i/elqCfg.min.js";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(eloquaScript, firstScriptTag);
 
         // Register a page change event handler
         CerosSDK.findExperience().fail(function(err){
-                console.error(err);
-            }).done(function(experience){
-                experience.subscribe(CerosSDK.EVENTS.PAGE_CHANGE, function(){
-                    _elqQ.push(['elqTrackPageView']);
-                });
+            console.error(err);
+        }).done(function(experience){
+            experience.subscribe(CerosSDK.EVENTS.PAGE_CHANGE, function(page){
+                _elqQ.push(['elqTrackPageView', window.location.href + '/p/' + page.getPageNumber()]);
             });
+        });
     }
 })();
 
