@@ -4,14 +4,7 @@
         sdkScript.type = "text/javascript";
         sdkScript.async = true;
         sdkScript.onload = activateEloquaTracking;
-
-        // Are we embedded in an iframe?
-        if (top != window) {
-            sdkScript.src = "//sdk.ceros.com/embedded-player-sdk-v3.js";
-        }
-        else {
-            sdkScript.src = "//sdk.ceros.com/standalone-player-sdk-v3.js";
-        }
+        sdkScript.src = "//sdk.ceros.com/standalone-player-sdk-v3.js";
 
         document.getElementsByTagName('head')[0].appendChild(sdkScript);
     }
@@ -52,14 +45,7 @@
         })();
 
         // Register a page change event handler
-        var findExperiencePromise;
-        if (experienceId) {
-            findExperiencePromise = CerosSDK.findExperience(experienceId);
-        }
-        else {
-            findExperiencePromise = CerosSDK.findExperience();
-        }
-        findExperiencePromise.fail(function(err){
+        CerosSDK.findExperience().fail(function(err){
                 console.error(err);
             }).done(function(experience){
                 experience.subscribe(CerosSDK.EVENTS.PAGE_CHANGE, function(){
