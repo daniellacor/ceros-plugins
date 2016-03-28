@@ -48,13 +48,13 @@ module.exports = function(grunt) {
                 options: {
                     prefix: '@version *'
                 },
-                src: ['dist/*.js']
+                src: ['dist/plugins/**/*.js']
             },
             constant: {
                 options: {
                     prefix: 'VERSION\\s*:\\s*[\'"]'
                 },
-                src: ['dist/*.js']
+                src: ['dist/plugins/**/*.js']
             }
         },
         watch: {
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
                     baseUrl: './src',
                     include: ['eloqua'],
                     optimize: 'none',
-                    out: './dist/plugins/eloqua.js',
+                    out: './dist/plugins/eloqua/main.js',
                     skipSemiColonInsertion: true
                 }
 
@@ -86,13 +86,13 @@ module.exports = function(grunt) {
                     mode: 'gzip'
                 },
                 files: [
-                    {src: ['dist/plugins/eloqua.js'], dest: 'dist/plugins/eloqua.js', filter: 'isFile'}
+                    {src: ['dist/plugins/eloqua/main.js'], dest: 'dist/plugins/eloqua/main.js', filter: 'isFile'}
                 ]
             }
         },
         md5: {
             release: {
-                src:['dist/**.*']
+                src:['dist/plugins/**/*.*']
             }
         },
         s3: {
@@ -111,8 +111,8 @@ module.exports = function(grunt) {
                         CacheControl: 86400 * 30 // 1 month
                     }
                 },
-                cwd: "./dist/",
-                src: ["**", "!**.js.gz"]
+                cwd: "./dist/plugins/",
+                src: ["**/*.*", "!**.js.gz"]
             },
             // Gzip files need to have the content encoding header.
             releaseGzip: {
@@ -131,8 +131,8 @@ module.exports = function(grunt) {
                         CacheControl: 86400 * 30 // 1 month
                     }
                 },
-                cwd: "./dist/",
-                src: ['**.js.gz']
+                cwd: "./dist/plugins/",
+                src: ['**/*.js.gz']
             }
         },
         gittag: {
@@ -220,11 +220,11 @@ module.exports = function(grunt) {
              * These should never overwrite files in our s3 bucket, always should be unique.
              * Code changes require update to version.
              *
-             * plugins/eloqua-1.0.0.js
-             * plugins/eloqua-1.0.0.gz.js
+             * plugins/eloqua/main-1.0.0.js
+             * plugins/eloqua/main-1.0.0.gz.js
              */
-            grunt.file.move('dist/plugins/' + type + '.js', 'dist/plugins/' + type + branchFileModifier + '-' + version + '.js');
-            grunt.file.move('dist/plugins/' + type + '.js.gz', 'dist/plugins' + type + branchFileModifier + '-' + version + '.js.gz');
+            grunt.file.move('dist/plugins/' + type + '/main.js', 'dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js');
+            grunt.file.move('dist/plugins/' + type + '/main.js.gz', 'dist/plugins' + type + '/' + branchFileModifier + '-' + version + '.js.gz');
 
             /**
              * Output files for Major Version (when version = 1.3.0 -- majorVersion = 1)
@@ -232,11 +232,11 @@ module.exports = function(grunt) {
              * can use v1 and we can update it with non-breaking changes without them having to update their
              * source.
              *
-             * plugins/eloqua-v1.js
-             * plugins/eloqua-v1.gz.js
+             * plugins/eloqua/main-v1.js
+             * plugins/eloqua/main-v1.gz.js
              */
-            grunt.file.copy('dist/plugins/' + type + branchFileModifier + '-' + version + '.js',        'dist/plugins/' + type + branchFileModifier + '-v' + majorVersion + '.js');
-            grunt.file.copy('dist/plugins/' + type + branchFileModifier + '-' + version + '.js.gz', 'dist/plugins/' + type + branchFileModifier + '-v' + majorVersion + '.js.gz');
+            grunt.file.copy('dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js', 'dist/plugins/' + type + '/' + branchFileModifier + '-v' + majorVersion + '.js');
+            grunt.file.copy('dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js.gz', 'dist/plugins/' + type + '/' + branchFileModifier + '-v' + majorVersion + '.js.gz');
         }
     });
 
