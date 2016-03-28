@@ -1,0 +1,28 @@
+{
+  "name": "ceros-plugins",
+  "version": "1.0.0",
+  "description": "A collection of plugins and integrations for Ceros experiences",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ceros/ceros-plugins.git"
+  },
+  "author": "Ceros Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ceros/ceros-plugins/issues"
+  },
+  "homepage": "https://github.com/ceros/ceros-plugins",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-aws": "^0.3.0",
+    "grunt-contrib-requirejs": "^0.4.4",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-fastly": "~0.1.4",
+    "grunt-git": "^0.2.14",
+    "grunt-version": "~0.2.1"
+  }
+}
