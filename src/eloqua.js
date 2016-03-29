@@ -46,7 +46,12 @@ var _elqQ = _elqQ || [];
             console.error(err);
         }).done(function(experience){
             experience.subscribe(CerosSDK.EVENTS.PAGE_CHANGE, function(page){
-                _elqQ.push(['elqTrackPageView', window.location.href + '/p/' + page.getPageNumber()]);
+                var pageUrl = window.location.href;
+                // if the URL does not end in /p/N, where N is a number
+                if (!pageUrl.match(/\/p\/\d+$/)){
+                    pageUrl = pageUrl + '/p/' + page.getPageNumber();
+                }
+                _elqQ.push(['elqTrackPageView', pageUrl]);
             });
         });
     }
