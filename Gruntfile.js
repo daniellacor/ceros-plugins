@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 
     // Breaks out the keys and also gives us a nice reference of what
     // needs to be in here without being able to be changed.
-    var awsConfigKeys = Object.keys(awsConfig);
+    var awsConfigKeys = _.keys(awsConfig);
 
     // Take inputs for the awsConfig, prefixed with 'aws.'.
     // For example accessKey can be inputted with '--aws.accessKey=accessKey'
@@ -237,14 +237,14 @@ module.exports = function(grunt) {
 
 
     grunt.registerMultiTask('md5', 'Generates MD5 for build artifacts', function() {
-        this.files.forEach(function(file) {
+        _.each(this.files, function(file) {
             if (typeof file.src === 'undefined') {
                 grunt.fail.warn('Files object doesn\'t exist');
             }
 
             var srcFiles = grunt.file.expand(file.src);
 
-            srcFiles.forEach(function(srcFile) {
+            _.each(srcFiles, function(srcFile) {
                 try {
                     var srcCode = grunt.file.read(srcFile);
                     var md5 = require('crypto').createHash('md5').update(srcCode).digest('hex');
@@ -266,7 +266,7 @@ module.exports = function(grunt) {
 
         var hasAllKeys = true;
         // Loop through the array of values here and make sure they are all set.
-        awsConfigKeys.forEach(function(key) {
+        _.each(awsConfigKeys, function(key) {
 
             if (!awsConfig[key]) {
                 grunt.log.error('Missing input [' + key + '] Please use --aws.' + key + '=<value>');
