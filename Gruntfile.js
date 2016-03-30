@@ -218,7 +218,7 @@ module.exports = function(grunt) {
              * plugins/eloqua/main-1.0.0.gz.js
              */
             grunt.file.move('dist/plugins/' + type + '/main.js', 'dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js');
-            grunt.file.move('dist/plugins/' + type + '/main.js.gz', 'dist/plugins' + type + '/' + branchFileModifier + '-' + version + '.js.gz');
+            grunt.file.move('dist/plugins/' + type + '/main.js.gz', 'dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js.gz');
 
             /**
              * Output files for Major Version (when version = 1.3.0 -- majorVersion = 1)
