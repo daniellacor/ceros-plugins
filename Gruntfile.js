@@ -217,8 +217,8 @@ module.exports = function(grunt) {
              * plugins/eloqua/main-1.0.0.js
              * plugins/eloqua/main-1.0.0.gz.js
              */
-            grunt.file.move('dist/plugins/' + type + '/main.js', 'dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js');
-            grunt.file.move('dist/plugins/' + type + '/main.js.gz', 'dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js.gz');
+            grunt.file.move('dist/plugins/' + type + '/main.js', 'dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js');
+            grunt.file.move('dist/plugins/' + type + '/main.js.gz', 'dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js.gz');
 
             /**
              * Output files for Major Version (when version = 1.3.0 -- majorVersion = 1)
@@ -229,8 +229,8 @@ module.exports = function(grunt) {
              * plugins/eloqua/main-v1.js
              * plugins/eloqua/main-v1.gz.js
              */
-            grunt.file.copy('dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js', 'dist/plugins/' + type + '/' + branchFileModifier + '-v' + majorVersion + '.js');
-            grunt.file.copy('dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js.gz', 'dist/plugins/' + type + '/' + branchFileModifier + '-v' + majorVersion + '.js.gz');
+            grunt.file.copy('dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js', 'dist/plugins/' + type + '/main' + branchFileModifier + '-v' + majorVersion + '.js');
+            grunt.file.copy('dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js.gz', 'dist/plugins/' + type + '/main' + branchFileModifier + '-v' + majorVersion + '.js.gz');
 
         });
     });
