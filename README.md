@@ -1,6 +1,8 @@
 # Ceros Plugins
 A collection of plugins and integrations for Ceros experiences.
 
+All plugins in this repository are licensed under the MIT license. A copy of the license is included in the LICENSE file.
+
 ## Eloqua Plugin
 
 This plugin enables tracking of page views within Ceros experiences in Oracle Eloqua. On each page change, the URL of the page

@@ -1,6 +1,11 @@
-/*
-* @version X.X.X
-*/
+/**
+ * Ceros Eloqua Plugin
+ * @version X.X.X
+ * @support support@ceros.com
+ *
+ * This plugin is licensed under the MIT license. A copy of this license and
+ * the accompanying source code is available at https://github.com/ceros/ceros-plugins
+ */
 
 // Initialize the Eloqua command queue at the global level
 // so that it's in the scope of our Ceros Event callback.
