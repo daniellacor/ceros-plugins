@@ -17,4 +17,5 @@ Then, replace the value of the `siteId` attribute with your Eloqua Site ID. This
 icon in the upper right of Eloqua, clicking "Setup", and then clicking "Company Defaults". If you have a first-party
 cookie domain configured with Eloqua, replace the value of the `cookieDomain` attribute with that domain. Otherwise,
 you may leave the value empty or delete the attribute entirely. This will cause the Eloqua cookie to be served as a
-third-party cookie. 
+third-party cookie. Using a first-party cookie is highly recommended, as most modern browsers will block third party
+cookies.

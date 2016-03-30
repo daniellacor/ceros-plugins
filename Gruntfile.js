@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
 
     var fs = require('fs');
+    var _ = require('lodash');
 
     var awsConfig = {
         accessKey: false,
@@ -15,14 +16,15 @@ module.exports = function(grunt) {
 
     // Take inputs for the awsConfig, prefixed with 'aws.'.
     // For example accessKey can be inputted with '--aws.accessKey=accessKey'
-    awsConfigKeys.forEach(function(key) {
-        var optionKey = 'aws.' + key;
+    _.each(awsConfigKeys, function(awsConfigKey){
+        var optionKey = 'aws.' + awsConfigKey;
         var optionValue = grunt.option(optionKey);
         if (optionValue) {
             // Use the original key to update it.
-            awsConfig[key] = optionValue;
+            awsConfig[awsConfigKey] = optionValue;
         }
     });
+
 
     grunt.file.move = function(from,to) {
         grunt.log.writeln('Moved '+from.cyan+' to '+to.cyan);
@@ -44,15 +46,9 @@ module.exports = function(grunt) {
             options: {
                 pkg: grunt.file.readJSON('package.json')
             },
-            header: {
+            eloqua: {
                 options: {
                     prefix: '@version *'
-                },
-                src: ['dist/plugins/**/*.js']
-            },
-            constant: {
-                options: {
-                    prefix: 'VERSION\\s*:\\s*[\'"]'
                 },
                 src: ['dist/plugins/**/*.js']
             }
@@ -212,9 +208,7 @@ module.exports = function(grunt) {
         var majorVersion = versionArray[0];
 
         var plugins = ['eloqua'];
-        for(var i = 0; i < plugins.length; i++) {
-            var type = plugins[i];
-
+        _.each(plugins, function(type){
             /**
              * Output files for specific Version (when version = 1.3.0)
              * These should never overwrite files in our s3 bucket, always should be unique.
@@ -237,7 +231,8 @@ module.exports = function(grunt) {
              */
             grunt.file.copy('dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js', 'dist/plugins/' + type + '/' + branchFileModifier + '-v' + majorVersion + '.js');
             grunt.file.copy('dist/plugins/' + type + '/' + branchFileModifier + '-' + version + '.js.gz', 'dist/plugins/' + type + '/' + branchFileModifier + '-v' + majorVersion + '.js.gz');
-        }
+
+        });
     });
 
 

@@ -1,3 +1,7 @@
+/*
+* @version X.X.X
+*/
+
 // Initialize the Eloqua command queue at the global level
 // so that it's in the scope of our Ceros Event callback.
 var _elqQ = _elqQ || [];
