@@ -82,7 +82,7 @@ module.exports = function(grunt) {
                     mode: 'gzip'
                 },
                 files: [
-                    {src: ['dist/plugins/eloqua/main.js'], dest: 'dist/plugins/eloqua/main.js', filter: 'isFile'}
+                    {src: ['dist/plugins/eloqua/main.js'], dest: 'dist/plugins/eloqua/main.js.gz', filter: 'isFile'}
                 ]
             }
         },
