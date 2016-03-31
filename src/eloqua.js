@@ -31,14 +31,13 @@ var _elqQ = _elqQ || [];
         var pluginScriptTag = document.getElementById("ceros-eloqua-plugin");
         var siteId = pluginScriptTag.getAttribute("siteId");
         var cookieDomain = pluginScriptTag.getAttribute("cookieDomain") || "";
-        var experienceId = pluginScriptTag.getAttribute("experienceId");
 
         if (!siteId) {
             console.error("Site ID is required for the Ceros Eloqua plugin.");
         }
 
         // Configure the Eloqua command queue and load the Eloqua script.
-        _elqQ.push(['elqSetSiteId', 'siteId']);
+        _elqQ.push(['elqSetSiteId', siteId]);
         if (cookieDomain !== ""){
             _elqQ.push(['elqUseFirstPartyCookie', cookieDomain]);
         }
