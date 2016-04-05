@@ -5,7 +5,7 @@
   "main": "Gruntfile.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ceros/ceros-plugins.git"
+    "url": "git@github.com:ceros/ceros-plugins.git"
   },
   "author": "Ceros Inc.",
   "license": "MIT",
