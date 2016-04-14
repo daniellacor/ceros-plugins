@@ -12,7 +12,7 @@ To use this plugin, paste the following code into the "Custom HTML" field of the
 access this field via the Settings menu in the upper right - Custom HTML is the third tab inside Settings.
 
 ```
-<script id="ceros-eloqua-plugin" src="sdk.ceros.com/plugins/eloqua.js" siteId="0" cookieDomain="" />
+<script id="ceros-eloqua-plugin" src="sdk.ceros.com/eloqua/main-v0.js.gz" siteId="0" cookieDomain="" />
 ```
 
 Then, replace the value of the `siteId` attribute with your Eloqua Site ID. This can be found by clicking on the gear
