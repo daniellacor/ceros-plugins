@@ -50,18 +50,18 @@ module.exports = function(grunt) {
                 options: {
                     prefix: '@version *'
                 },
-                src: ['dist/plugins/**/*.js']
+                src: ['dist/plugins/eloqua/*.js']
             },
             soundjs: {
                 options: {
                     prefix: '@version *'
                 },
-                src: ['dist/plugins/**/*.js']
+                src: ['dist/plugins/soundjs/*.js']
             }
         },
         watch: {
             js : {
-                files: ['./src/*.js'],
+                files: ['./src/**/*.js'],
                 tasks: ['compileJS'],
                 options: {
                     spawn: false,
@@ -73,16 +73,16 @@ module.exports = function(grunt) {
         requirejs: {
             compile_eloqua_plugin: {
                 options: {
-                    baseUrl: './src',
+                    baseUrl: './src/eloqua',
                     include: ['eloqua'],
                     optimize: 'none',
                     out: './dist/plugins/eloqua/main.js',
                     skipSemiColonInsertion: true
                 }
             },
-            compile_eloqua_plugin: {
+            compile_soundjs_plugin: {
                 options: {
-                    baseUrl: './src',
+                    baseUrl: './src/soundjs',
                     include: ['soundjs'],
                     optimize: 'none',
                     out: './dist/plugins/soundjs/main.js',
@@ -112,7 +112,7 @@ module.exports = function(grunt) {
                     }
                 },
                 cwd: "./dist/plugins/",
-                src: ["**/*.*", "!**.js.gz"]
+                src: ["**/*.*"]
             },
         },
         gittag: {

@@ -10,7 +10,7 @@ will be tracked under the configured Eloqua Site ID.
 
 ### How to use this plugin: 
 
-paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio. You can
+Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio. You can
 access this field via the Settings menu in the upper right - Custom HTML is the third tab inside Settings.
 
 ```
@@ -33,7 +33,7 @@ The sound file must be hosted on a server that allows [cross origin requests](ht
 
 ### How to use this plugin:
 
-1. paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio.
+1. Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio.
 ```
 <script id="ceros-soundjs-plugin" src="//sdk.ceros.com/soundjs/main-v1.js.gz" soundTag="playsound"></script>
 ```

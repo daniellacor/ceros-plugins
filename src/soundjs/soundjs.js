@@ -42,10 +42,10 @@
     function activatePlaySound() {
         loadSoundJs();
 
-        CerosSDK.findExperience().done(function(ceros) {
+        CerosSDK.findExperience().done(function(cerosExperience) {
             var pluginScriptTag = document.getElementById("ceros-soundjs-plugin");
             var soundTag = pluginScriptTag.getAttribute("soundTag");
-            var componentsWithSound = ceros.findComponentsByTag(soundTag);
+            var componentsWithSound = cerosExperience.findComponentsByTag(soundTag);
             jQuery.each(componentsWithSound.components, function (soundComponentIndex, soundComponent) {
                 createjs.Sound.registerSound(soundComponent.getPayload(), soundComponent.id);
             });
