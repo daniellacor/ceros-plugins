@@ -1,6 +1,6 @@
 /**
  * Ceros Plugin for SoundJS
- * @version 1.0.0
+ * @version 0.2.0
  * @support support@ceros.com
  *
  * This plugin enables people using the Ceros Studio to create an experience

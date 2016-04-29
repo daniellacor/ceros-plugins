@@ -1,6 +1,6 @@
 /**
  * Ceros Eloqua Plugin
- * @version X.X.X
+ * @version 0.2.0
  * @support support@ceros.com
  *
  * This plugin is licensed under the MIT license. A copy of this license and
