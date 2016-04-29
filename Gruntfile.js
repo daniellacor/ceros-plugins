@@ -50,12 +50,18 @@ module.exports = function(grunt) {
                 options: {
                     prefix: '@version *'
                 },
-                src: ['dist/plugins/**/*.js']
+                src: ['dist/plugins/eloqua/*.js']
+            },
+            soundjs: {
+                options: {
+                    prefix: '@version *'
+                },
+                src: ['dist/plugins/soundjs/*.js']
             }
         },
         watch: {
             js : {
-                files: ['./src/*.js'],
+                files: ['./src/**/*.js'],
                 tasks: ['compileJS'],
                 options: {
                     spawn: false,
@@ -67,23 +73,21 @@ module.exports = function(grunt) {
         requirejs: {
             compile_eloqua_plugin: {
                 options: {
-                    baseUrl: './src',
+                    baseUrl: './src/eloqua',
                     include: ['eloqua'],
                     optimize: 'none',
                     out: './dist/plugins/eloqua/main.js',
                     skipSemiColonInsertion: true
                 }
-
-            }
-        },
-        compress: {
-            release: {
+            },
+            compile_soundjs_plugin: {
                 options: {
-                    mode: 'gzip'
-                },
-                files: [
-                    {src: ['dist/plugins/eloqua/main.js'], dest: 'dist/plugins/eloqua/main.js.gz', filter: 'isFile'}
-                ]
+                    baseUrl: './src/soundjs',
+                    include: ['soundjs'],
+                    optimize: 'none',
+                    out: './dist/plugins/soundjs/main.js',
+                    skipSemiColonInsertion: true
+                }
             }
         },
         md5: {
@@ -108,28 +112,8 @@ module.exports = function(grunt) {
                     }
                 },
                 cwd: "./dist/plugins/",
-                src: ["**/*.*", "!**.js.gz"]
+                src: ["**/*.*"]
             },
-            // Gzip files need to have the content encoding header.
-            releaseGzip: {
-                options: {
-                    accessKeyId: "<%= aws.accessKey %>",
-                    secretAccessKey: "<%= aws.secretKey %>",
-                    region: "<%= aws.region %>",
-                    bucket: "<%= aws.s3Bucket %>",
-                    access: 'public-read',
-                    // This flag auto gzips all files it uploads,
-                    // since we handle it ourselves we disable it.
-                    gzip: false,
-                    cache: false, // Always upload, even if it's the same etag
-                    headers: {
-                        ContentEncoding: 'gzip',
-                        CacheControl: 86400 * 30 // 1 month
-                    }
-                },
-                cwd: "./dist/plugins/",
-                src: ['**/*.js.gz']
-            }
         },
         gittag: {
             tagRelease: {
@@ -207,7 +191,7 @@ module.exports = function(grunt) {
         }
         var majorVersion = versionArray[0];
 
-        var plugins = ['eloqua'];
+        var plugins = ['eloqua', 'soundjs'];
         _.each(plugins, function(type){
             /**
              * Output files for specific Version (when version = 1.3.0)
@@ -218,7 +202,6 @@ module.exports = function(grunt) {
              * plugins/eloqua/main-1.0.0.gz.js
              */
             grunt.file.move('dist/plugins/' + type + '/main.js', 'dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js');
-            grunt.file.move('dist/plugins/' + type + '/main.js.gz', 'dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js.gz');
 
             /**
              * Output files for Major Version (when version = 1.3.0 -- majorVersion = 1)
@@ -230,7 +213,6 @@ module.exports = function(grunt) {
              * plugins/eloqua/main-v1.gz.js
              */
             grunt.file.copy('dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js', 'dist/plugins/' + type + '/main' + branchFileModifier + '-v' + majorVersion + '.js');
-            grunt.file.copy('dist/plugins/' + type + '/main' + branchFileModifier + '-' + version + '.js.gz', 'dist/plugins/' + type + '/main' + branchFileModifier + '-v' + majorVersion + '.js.gz');
 
         });
     });
@@ -307,13 +289,11 @@ module.exports = function(grunt) {
         'clean',
         // Version and create the files in the /dist folder
         'compileJS',
-        'compress',
         'rename',
         // Show the md5 of the files
         'md5',
         // Push to S3
         's3:releaseNonGzip',
-        's3:releaseGzip',
         // Invalidate the Files on Fastly
         'updateFastlyOptions',
         'fastly'
@@ -327,7 +307,6 @@ module.exports = function(grunt) {
         'clean',
         // Version and create the files in the /dist folder
         'compileJS',
-        'compress',
         'rename',
         // Show the md5 of the files
         'md5',
@@ -337,11 +316,8 @@ module.exports = function(grunt) {
         'gitpush:pushReleaseTag',
         // Push to S3
         's3:releaseNonGzip',
-        's3:releaseGzip',
         // Invalidate the Files on Fastly
         'updateFastlyOptions',
         'fastly'
     ]);
-
-
 };
