@@ -36,7 +36,7 @@
         soundScript.type = "text/javascript";
         soundScript.async = true;
         soundScript.src = "//code.createjs.com/soundjs-0.6.2.min.js";
-        document.body.appendChild(sdkScript);
+        document.body.appendChild(soundScript);
     }
 
     function activatePlaySound() {
