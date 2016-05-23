@@ -8,13 +8,13 @@ All plugins in this repository are licensed under the MIT license. A copy of the
 This plugin enables tracking of page views within Ceros experiences in Oracle Eloqua. On each page change, the URL of the page
 will be tracked under the configured Eloqua Site ID.
 
-### How to use this plugin: 
+### How to use this plugin:
 
 Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio. You can
 access this field via the Settings menu in the upper right - Custom HTML is the third tab inside Settings.
 
 ```
-<script id="ceros-eloqua-plugin" src="//sdk.ceros.com/eloqua/main-v0.js.gz" siteId="0" cookieDomain=""></script>
+<script id="ceros-eloqua-plugin" src="//sdk.ceros.com/eloqua/main-v0.js" siteId="0" cookieDomain=""></script>
 ```
 
 Then, replace the value of the `siteId` attribute with your Eloqua Site ID. This can be found by clicking on the gear
@@ -35,7 +35,7 @@ The sound file must be hosted on a server that allows [cross origin requests](ht
 
 1. Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio.
 ```
-<script id="ceros-soundjs-plugin" src="//sdk.ceros.com/soundjs/main-v1.js.gz" soundTag="playsound"></script>
+<script id="ceros-soundjs-plugin" src="//sdk.ceros.com/soundjs/main-v0.js" soundTag="playsound"></script>
 ```
 1. Tag a component with 'playsound' in the SDK panel
 1. Set the Payload to the URL of the sound file
