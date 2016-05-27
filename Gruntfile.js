@@ -57,6 +57,12 @@ module.exports = function(grunt) {
                     prefix: '@version *'
                 },
                 src: ['dist/plugins/soundjs/*.js']
+            },
+            highlander: {
+                options: {
+                    prefix: '@version *'
+                },
+                src: ['dist/plugins/highlander/*.js']
             }
         },
         watch: {
@@ -86,6 +92,15 @@ module.exports = function(grunt) {
                     include: ['soundjs'],
                     optimize: 'none',
                     out: './dist/plugins/soundjs/main.js',
+                    skipSemiColonInsertion: true
+                }
+            },
+            compile_highlander_plugin: {
+                options: {
+                    baseUrl: './src/highlander',
+                    include: ['highlander'],
+                    optimize: 'none',
+                    out: './dist/plugins/highlander/main.js',
                     skipSemiColonInsertion: true
                 }
             }
@@ -191,7 +206,7 @@ module.exports = function(grunt) {
         }
         var majorVersion = versionArray[0];
 
-        var plugins = ['eloqua', 'soundjs'];
+        var plugins = ['eloqua', 'soundjs', 'highlander'];
         _.each(plugins, function(type){
             /**
              * Output files for specific Version (when version = 1.3.0)

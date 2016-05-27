@@ -1,6 +1,6 @@
 /**
  * Ceros Highlander Plugin. There can be only one (layer visible at a time)
- * @version 0.1.0
+ * @version 0.2.0
  * @support support@ceros.com
  *
  * This plugin allows you to define a group of layers, where only 1 layer in the group can be visible at a time
