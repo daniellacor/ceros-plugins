@@ -30,9 +30,9 @@
     function activateHighlander() {
         CerosSDK.findExperience().done(function(cerosExperience) {
             var pluginScriptTag = document.getElementById("ceros-highlander-plugin");
-            var groupsOfPictures = pluginScriptTag.getAttribute("highlanderTags").split(',');
+            var highlanderTags = pluginScriptTag.getAttribute("highlanderTags").split(',');
 
-            jQuery.each(groupsOfPictures, function(tagIndex, groupTag) {
+            jQuery.each(highlanderTags, function(tagIndex, groupTag) {
             	var layerCollection = cerosExperience.findLayersByTag(groupTag);
             	layerCollection.subscribe(CerosSDK.EVENTS.SHOWN, function(theVisibleLayer) {
             		jQuery.each(layerCollection.layers, function(layerIndex, someLayerInTheGroup) {
