@@ -7,7 +7,7 @@
  * If any layer in the group is shown, then all other layers in the group will be automatically hidden. The groups
  * are defined using the SDK panel to give each layer in the group the same tag.
  *
- * You can define multiple groups by giving different tags to each group
+ * You can define multiple groups by giving different tags to each group.
  *
  * This plugin is licensed under the MIT license. A copy of this license and
  * the accompanying source code is available at https://github.com/ceros/ceros-plugins
