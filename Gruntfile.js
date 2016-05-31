@@ -131,11 +131,25 @@ module.exports = function(grunt) {
             }
         },
         gittag: {
-            tagRelease: {
+            tagEloqua: {
                 options: {
                     cwd: './',
                     verbose: true,
-                    tag: String(grunt.file.readJSON('package.json').version)
+                    tag: 'eloqua-' + String(grunt.file.readJSON('src/eloqua/version.json').version)
+                }
+            },
+            tagHighlander: {
+                options: {
+                    cwd: './',
+                    verbose: true,
+                    tag: 'highlander-' + String(grunt.file.readJSON('src/highlander/version.json').version)
+                }
+            },
+            tagSoundJs: {
+                options: {
+                    cwd: './',
+                    verbose: true,
+                    tag: 'soundjs-' + String(grunt.file.readJSON('src/soundjs/version.json').version)
                 }
             }
         },
@@ -327,7 +341,7 @@ module.exports = function(grunt) {
         // Show the md5 of the files
         'md5',
         // Create the tag from the version.  Will fail if already exists.
-        'gittag:tagRelease',
+        'gittag',
         // Push the tag to github
         'gitpush:pushReleaseTag',
         // Push to S3
