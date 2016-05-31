@@ -43,24 +43,24 @@ module.exports = function(grunt) {
     grunt.initConfig({
         aws: awsConfig,
         version: {
-            options: {
-                pkg: grunt.file.readJSON('package.json')
-            },
             eloqua: {
                 options: {
-                    prefix: '@version *'
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/eloqua/version.json')
                 },
                 src: ['dist/plugins/eloqua/*.js']
             },
             soundjs: {
                 options: {
-                    prefix: '@version *'
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/soundjs/version.json')
                 },
                 src: ['dist/plugins/soundjs/*.js']
             },
             highlander: {
                 options: {
-                    prefix: '@version *'
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/highlander/version.json')
                 },
                 src: ['dist/plugins/highlander/*.js']
             }
@@ -128,7 +128,7 @@ module.exports = function(grunt) {
                 },
                 cwd: "./dist/plugins/",
                 src: ["**/*.*"]
-            },
+            }
         },
         gittag: {
             tagRelease: {
@@ -199,15 +199,16 @@ module.exports = function(grunt) {
             branchFileModifier = '-' + grunt.option('branch').replace('/', '-');
         }
 
-        var version = String(grunt.file.readJSON('package.json').version);
-        var versionArray = version.split('.');
-        if (versionArray.length < 3) {
-            grunt.fail.warn('Version should be specified in Major.Minor.Patch (1.0.0)');
-        }
-        var majorVersion = versionArray[0];
-
         var plugins = ['eloqua', 'soundjs', 'highlander'];
         _.each(plugins, function(type){
+
+            var version = String(grunt.file.readJSON('src/' + type +'/version.json').version);
+            var versionArray = version.split('.');
+            if (versionArray.length < 3) {
+                grunt.fail.warn('Version of ' + type + ' should be specified in Major.Minor.Patch (1.0.0)');
+            }
+            var majorVersion = versionArray[0];
+
             /**
              * Output files for specific Version (when version = 1.3.0)
              * These should never overwrite files in our s3 bucket, always should be unique.
