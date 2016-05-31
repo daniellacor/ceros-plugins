@@ -32,6 +32,7 @@ module.exports = function(grunt) {
         grunt.file.delete(from);
     };
 
+    grunt.loadNpmTasks('grunt-continue');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
@@ -340,9 +341,15 @@ module.exports = function(grunt) {
         'rename',
         // Show the md5 of the files
         'md5',
+        // Turn on continue-on-failure for the creation of git tags.
+        // Because we are independently versioning the plugins, it is
+        // expected that some tag creation might fail.
+        'continue:on',
         // Create the tag from the version.  Will fail if already exists.
         'gittag',
-        // Push the tag to github
+        // Turn off continue-on-failure
+        'continue:off',
+        // Push the tags to github. Git will do nothing if the tag already exists.
         'gitpush:pushReleaseTag',
         // Push to S3
         's3:releaseNonGzip',
