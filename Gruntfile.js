@@ -57,6 +57,12 @@ module.exports = function(grunt) {
                     prefix: '@version *'
                 },
                 src: ['dist/plugins/soundjs/*.js']
+            },
+            marketo: {
+                options: {
+                    prefix: '@version *'
+                },
+                src: ['dist/plugins/marketo/*.js']
             }
         },
         watch: {
