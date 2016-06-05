@@ -42,12 +42,12 @@
         marketoScript.type = "text/javascript";
         marketoScript.async = true;
         marketoScript.src = '//munchkin.marketo.net/munchkin.js';
-        s.onreadystatechange = function() {
+        marketoScript.onreadystatechange = function() {
             if (this.readyState == 'complete' || this.readyState == 'loaded') {
                 initMunchkin();
             }
         };
-        s.onload = initMunchkin;
+        marketoScript.onload = initMunchkin;
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(marketoScript, firstScriptTag);
 
