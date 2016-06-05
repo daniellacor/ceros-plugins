@@ -86,6 +86,15 @@ module.exports = function(grunt) {
                     skipSemiColonInsertion: true
                 }
             },
+            compile_marketo_plugin: {
+                options: {
+                    baseUrl: './src/marketo',
+                    include: ['marketo'],
+                    optimize: 'none',
+                    out: './dist/plugins/marketo/main.js',
+                    skipSemiColonInsertion: true
+                }
+            },
             compile_soundjs_plugin: {
                 options: {
                     baseUrl: './src/soundjs',
