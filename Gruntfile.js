@@ -206,7 +206,7 @@ module.exports = function(grunt) {
         }
         var majorVersion = versionArray[0];
 
-        var plugins = ['eloqua', 'soundjs'];
+        var plugins = ['eloqua', 'marketo', 'soundjs'];
         _.each(plugins, function(type){
             /**
              * Output files for specific Version (when version = 1.3.0)
