@@ -55,13 +55,19 @@
         CerosSDK.findExperience().fail(function(err){
             console.error(err);
         }).done(function(experience){
+            var afterFirstChange = false;
             experience.subscribe(CerosSDK.EVENTS.PAGE_CHANGE, function(page){
-                var pageUrl = window.location.href;
-                // if the URL does not end in /p/N, where N is a number
-                if (!pageUrl.match(/\/p\/\d+$/)){
-                    pageUrl = pageUrl + '/p/' + page.getPageNumber();
+                if (afterFirstChange) {
+                    var pathname = window.location.pathname;
+                    // if the URL does not end in /p/N, where N is a number
+                    if (!pathname.match(/\/p\/\d+$/)){
+                        pathname = pathname + '/p/' + page.getPageNumber();
+                    }
+                    Munchkin.munchkinFunction('visitWebPage', {url : pathname});
+                } else {
+                    afterFirstChange = true;
                 }
-                Munchkin.munchkinFunction('visitWebPage', {url : pageUrl});
+
             });
         });
     }
