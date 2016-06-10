@@ -41,13 +41,9 @@
         var marketoScript = document.createElement('script');
         marketoScript.type = "text/javascript";
         marketoScript.async = true;
-        marketoScript.src = '//munchkin.marketo.net/munchkin.js';
-        marketoScript.onreadystatechange = function() {
-            if (this.readyState == 'complete' || this.readyState == 'loaded') {
-                initMunchkin();
-            }
-        };
         marketoScript.onload = initMunchkin;
+        marketoScript.src = '//munchkin.marketo.net/munchkin.js';
+
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(marketoScript, firstScriptTag);
 
