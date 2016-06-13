@@ -1,6 +1,6 @@
 /**
  * Ceros Marketo Plugin
- * @version 0.1.0
+ * @version 0.2.0
  * @support support@ceros.com
  *
  * This plugin is licensed under the MIT license. A copy of this license and
@@ -29,12 +29,8 @@
             console.error("Account ID is required for the Ceros Munchkin plugin.");
         }
 
-        var didInit;
         function initMunchkin() {
-            if(!didInit) {
-                didInit = true;
-                Munchkin.init(accountId);
-            }
+            Munchkin.init(accountId);
         }
 
         //load the Marketo script then initialize
