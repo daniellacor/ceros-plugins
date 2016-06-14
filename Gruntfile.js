@@ -58,11 +58,11 @@ module.exports = function(grunt) {
                 },
                 src: ['dist/plugins/soundjs/*.js']
             },
-            marketo: {
+            "marketo-munchkin": {
                 options: {
                     prefix: '@version *'
                 },
-                src: ['dist/plugins/marketo/*.js']
+                src: ['dist/plugins/marketo-munchkin/*.js']
             }
         },
         watch: {
@@ -86,12 +86,12 @@ module.exports = function(grunt) {
                     skipSemiColonInsertion: true
                 }
             },
-            compile_marketo_plugin: {
+            compile_marketo_munchkin_plugin: {
                 options: {
-                    baseUrl: './src/marketo',
-                    include: ['marketo'],
+                    baseUrl: './src/marketo-munchkin',
+                    include: ['marketo-munchkin'],
                     optimize: 'none',
-                    out: './dist/plugins/marketo/main.js',
+                    out: './dist/plugins/marketo-munchkin/main.js',
                     skipSemiColonInsertion: true
                 }
             },
@@ -206,7 +206,7 @@ module.exports = function(grunt) {
         }
         var majorVersion = versionArray[0];
 
-        var plugins = ['eloqua', 'marketo', 'soundjs'];
+        var plugins = ['eloqua', 'marketo-munchkin', 'soundjs'];
         _.each(plugins, function(type){
             /**
              * Output files for specific Version (when version = 1.3.0)

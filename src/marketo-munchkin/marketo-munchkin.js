@@ -1,5 +1,5 @@
 /**
- * Ceros Marketo Plugin
+ * Ceros Marketo Munchkin Plugin
  * @version 0.2.0
  * @support support@ceros.com
  *
@@ -11,18 +11,18 @@
         var sdkScript = document.createElement('script');
         sdkScript.type = "text/javascript";
         sdkScript.async = true;
-        sdkScript.onload = activateMarketoTracking;
+        sdkScript.onload = activateMarketoMunchkinTracking;
         sdkScript.src = "//sdk.ceros.com/standalone-player-sdk-v3.js";
 
         document.getElementsByTagName('head')[0].appendChild(sdkScript);
     }
     else {
-        activateMarketoTracking();
+        activateMarketoMunchkinTracking();
     }
 
 
-    function activateMarketoTracking() {
-        var pluginScriptTag = document.getElementById("ceros-marketo-plugin");
+    function activateMarketoMunchkinTracking() {
+        var pluginScriptTag = document.getElementById("ceros-marketo-munchkin-plugin");
         var accountId = pluginScriptTag.getAttribute("accountId");
 
         if (!accountId) {
@@ -34,14 +34,14 @@
         }
 
         //load the Marketo script then initialize
-        var marketoScript = document.createElement('script');
-        marketoScript.type = "text/javascript";
-        marketoScript.async = true;
-        marketoScript.onload = initMunchkin;
-        marketoScript.src = '//munchkin.marketo.net/munchkin.js';
+        var munchkinScript = document.createElement('script');
+        munchkinScript.type = "text/javascript";
+        munchkinScript.async = true;
+        munchkinScript.onload = initMunchkin;
+        munchkinScript.src = '//munchkin.marketo.net/munchkin.js';
 
         var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(marketoScript, firstScriptTag);
+        firstScriptTag.parentNode.insertBefore(munchkinScript, firstScriptTag);
 
         // Register a page change event handler
         CerosSDK.findExperience().fail(function(err){
