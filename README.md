@@ -39,3 +39,19 @@ The sound file must be hosted on a server that allows [cross origin requests](ht
 ```
 1. Tag a component with 'playsound' in the SDK panel
 1. Set the Payload to the URL of the sound file
+
+## Highlander Plugin
+
+There can be only one (layer visible at a time)
+This plugin allows you to define a group of layers, where only 1 layer in the group can be visible at a time.
+If any layer in the group is shown, then all other layers in the group will be automatically hidden.
+The groups are defined using the SDK panel to give each layer in the group the same tag.
+
+### How to use this plugin:
+
+1. Tag each layer in your group
+1. Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio.
+```
+<script id="ceros-highlander-plugin" src="//sdk.ceros.com/highlander/main-v0.js" highlanderTags="your,tags,here"></script>
+```
+1. Update the highlanderTags attribute on the script tag with the tags that you've used in step 1

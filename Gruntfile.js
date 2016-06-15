@@ -32,6 +32,7 @@ module.exports = function(grunt) {
         grunt.file.delete(from);
     };
 
+    grunt.loadNpmTasks('grunt-continue');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-watch');
@@ -43,20 +44,26 @@ module.exports = function(grunt) {
     grunt.initConfig({
         aws: awsConfig,
         version: {
-            options: {
-                pkg: grunt.file.readJSON('package.json')
-            },
             eloqua: {
                 options: {
-                    prefix: '@version *'
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/eloqua/version.json')
                 },
                 src: ['dist/plugins/eloqua/*.js']
             },
             soundjs: {
                 options: {
-                    prefix: '@version *'
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/soundjs/version.json')
                 },
                 src: ['dist/plugins/soundjs/*.js']
+            },
+            highlander: {
+                options: {
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/highlander/version.json')
+                },
+                src: ['dist/plugins/highlander/*.js']
             }
         },
         watch: {
@@ -88,6 +95,15 @@ module.exports = function(grunt) {
                     out: './dist/plugins/soundjs/main.js',
                     skipSemiColonInsertion: true
                 }
+            },
+            compile_highlander_plugin: {
+                options: {
+                    baseUrl: './src/highlander',
+                    include: ['highlander'],
+                    optimize: 'none',
+                    out: './dist/plugins/highlander/main.js',
+                    skipSemiColonInsertion: true
+                }
             }
         },
         md5: {
@@ -113,14 +129,28 @@ module.exports = function(grunt) {
                 },
                 cwd: "./dist/plugins/",
                 src: ["**/*.*"]
-            },
+            }
         },
         gittag: {
-            tagRelease: {
+            tagEloqua: {
                 options: {
                     cwd: './',
                     verbose: true,
-                    tag: String(grunt.file.readJSON('package.json').version)
+                    tag: 'eloqua-' + String(grunt.file.readJSON('src/eloqua/version.json').version)
+                }
+            },
+            tagHighlander: {
+                options: {
+                    cwd: './',
+                    verbose: true,
+                    tag: 'highlander-' + String(grunt.file.readJSON('src/highlander/version.json').version)
+                }
+            },
+            tagSoundJs: {
+                options: {
+                    cwd: './',
+                    verbose: true,
+                    tag: 'soundjs-' + String(grunt.file.readJSON('src/soundjs/version.json').version)
                 }
             }
         },
@@ -184,15 +214,16 @@ module.exports = function(grunt) {
             branchFileModifier = '-' + grunt.option('branch').replace('/', '-');
         }
 
-        var version = String(grunt.file.readJSON('package.json').version);
-        var versionArray = version.split('.');
-        if (versionArray.length < 3) {
-            grunt.fail.warn('Version should be specified in Major.Minor.Patch (1.0.0)');
-        }
-        var majorVersion = versionArray[0];
-
-        var plugins = ['eloqua', 'soundjs'];
+        var plugins = ['eloqua', 'soundjs', 'highlander'];
         _.each(plugins, function(type){
+
+            var version = String(grunt.file.readJSON('src/' + type +'/version.json').version);
+            var versionArray = version.split('.');
+            if (versionArray.length < 3) {
+                grunt.fail.warn('Version of ' + type + ' should be specified in Major.Minor.Patch (1.0.0)');
+            }
+            var majorVersion = versionArray[0];
+
             /**
              * Output files for specific Version (when version = 1.3.0)
              * These should never overwrite files in our s3 bucket, always should be unique.
@@ -310,9 +341,15 @@ module.exports = function(grunt) {
         'rename',
         // Show the md5 of the files
         'md5',
+        // Turn on continue-on-failure for the creation of git tags.
+        // Because we are independently versioning the plugins, it is
+        // expected that some tag creation might fail.
+        'continue:on',
         // Create the tag from the version.  Will fail if already exists.
-        'gittag:tagRelease',
-        // Push the tag to github
+        'gittag',
+        // Turn off continue-on-failure
+        'continue:off',
+        // Push the tags to github. Git will do nothing if the tag already exists.
         'gitpush:pushReleaseTag',
         // Push to S3
         's3:releaseNonGzip',
