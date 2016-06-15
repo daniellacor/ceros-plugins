@@ -37,8 +37,8 @@ The sound file must be hosted on a server that allows [cross origin requests](ht
 ```
 <script id="ceros-soundjs-plugin" src="//sdk.ceros.com/soundjs/main-v0.js" soundTag="playsound"></script>
 ```
-1. Tag a component with 'playsound' in the SDK panel
-1. Set the Payload to the URL of the sound file
+2. Tag a component with 'playsound' in the SDK panel
+3. Set the Payload to the URL of the sound file
 
 ## Marketo Munchkin Plugin
 
@@ -52,4 +52,4 @@ All lead associations will be based on the domain of the experience being viewed
 ```
 <script id="ceros-marketo-munchkin-plugin" src="//sdk.ceros.com/marketo-munchkin/main-v0.js" accountId="AAA-111-BBB"></script>
 ```
-1. Replace the value of the accountId attribute with your marketo munchkin Id
+2. Replace the value of the accountId attribute with your marketo munchkin Id
