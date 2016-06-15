@@ -39,3 +39,17 @@ The sound file must be hosted on a server that allows [cross origin requests](ht
 ```
 1. Tag a component with 'playsound' in the SDK panel
 1. Set the Payload to the URL of the sound file
+
+## Marketo Munchkin Plugin
+
+Uses the [Marketo Munchklin Lead Tracking](http://developers.marketo.com/documentation/websites/lead-tracking-munchkin-js/) to send page view data to your Marketo account.
+
+All lead associations will be based on the domain of the experience being viewed (view.ceros.com or a vanity domain).
+
+### How to use this plugin:
+
+1. Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio.
+```
+<script id="ceros-marketo-munchkin-plugin" src="//sdk.ceros.com/marketo-munchkin/main-v0.js" accountId="AAA-111-BBB"></script>
+```
+1. Replace the value of the accountId attribute with your marketo munchkin Id
