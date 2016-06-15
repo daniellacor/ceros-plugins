@@ -42,7 +42,7 @@ The sound file must be hosted on a server that allows [cross origin requests](ht
 
 ## Marketo Munchkin Plugin
 
-Uses the [Marketo Munchklin Lead Tracking](http://developers.marketo.com/documentation/websites/lead-tracking-munchkin-js/) to send page view data to your Marketo account.
+Uses the [Marketo Munchkin Lead Tracking](http://developers.marketo.com/documentation/websites/lead-tracking-munchkin-js/) to send page view data to your Marketo account.
 
 All lead associations will be based on the domain of the experience being viewed (view.ceros.com or a vanity domain).
 
