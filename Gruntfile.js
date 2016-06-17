@@ -64,6 +64,13 @@ module.exports = function(grunt) {
                     pkg: grunt.file.readJSON('src/highlander/version.json')
                 },
                 src: ['dist/plugins/highlander/*.js']
+            },
+            "marketo-munchkin": {
+                options: {
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/marketo-munchkin/version.json')
+                },
+                src: ['dist/plugins/marketo-munchkin/*.js']
             }
         },
         watch: {
@@ -84,6 +91,15 @@ module.exports = function(grunt) {
                     include: ['eloqua'],
                     optimize: 'none',
                     out: './dist/plugins/eloqua/main.js',
+                    skipSemiColonInsertion: true
+                }
+            },
+            compile_marketo_munchkin_plugin: {
+                options: {
+                    baseUrl: './src/marketo-munchkin',
+                    include: ['marketo-munchkin'],
+                    optimize: 'none',
+                    out: './dist/plugins/marketo-munchkin/main.js',
                     skipSemiColonInsertion: true
                 }
             },
@@ -152,6 +168,13 @@ module.exports = function(grunt) {
                     verbose: true,
                     tag: 'soundjs-' + String(grunt.file.readJSON('src/soundjs/version.json').version)
                 }
+            },
+            tagMarketoMunchkin: {
+                options: {
+                    cwd: './',
+                    verbose: true,
+                    tag: 'marketo-munchkin-' + String(grunt.file.readJSON('src/marketo-munchkin/version.json').version)
+                }
             }
         },
         gitpush: {
@@ -214,7 +237,7 @@ module.exports = function(grunt) {
             branchFileModifier = '-' + grunt.option('branch').replace('/', '-');
         }
 
-        var plugins = ['eloqua', 'soundjs', 'highlander'];
+        var plugins = ['eloqua', 'marketo-munchkin', 'soundjs', 'highlander'];
         _.each(plugins, function(type){
 
             var version = String(grunt.file.readJSON('src/' + type +'/version.json').version);

@@ -37,8 +37,8 @@ The sound file must be hosted on a server that allows [cross origin requests](ht
 ```
 <script id="ceros-soundjs-plugin" src="//sdk.ceros.com/soundjs/main-v0.js" soundTag="playsound"></script>
 ```
-1. Tag a component with 'playsound' in the SDK panel
-1. Set the Payload to the URL of the sound file
+2. Tag a component with 'playsound' in the SDK panel
+3. Set the Payload to the URL of the sound file
 
 ## Highlander Plugin
 
@@ -55,3 +55,18 @@ The groups are defined using the SDK panel to give each layer in the group the s
 <script id="ceros-highlander-plugin" src="//sdk.ceros.com/highlander/main-v0.js" highlanderTags="your,tags,here"></script>
 ```
 1. Update the highlanderTags attribute on the script tag with the tags that you've used in step 1
+
+
+## Marketo Munchkin Plugin
+
+Uses the [Marketo Munchkin Lead Tracking](http://developers.marketo.com/documentation/websites/lead-tracking-munchkin-js/) to send page view data to your Marketo account.
+
+All lead associations will be based on the domain of the experience being viewed (view.ceros.com or a vanity domain).
+
+### How to use this plugin:
+
+1. Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio.
+```
+<script id="ceros-marketo-munchkin-plugin" src="//sdk.ceros.com/marketo-munchkin/main-v0.js" accountId="AAA-111-BBB"></script>
+```
+2. Replace the value of the accountId attribute with your marketo munchkin Id
