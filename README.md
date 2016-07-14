@@ -70,3 +70,21 @@ All lead associations will be based on the domain of the experience being viewed
 <script id="ceros-marketo-munchkin-plugin" src="//sdk.ceros.com/marketo-munchkin/main-v0.js" accountId="AAA-111-BBB"></script>
 ```
 2. Replace the value of the accountId attribute with your marketo munchkin Id
+
+## The State of the Layer Plugin
+
+Allows people using the Ceros Studio's SDK pallet to tag components to enable them to both control, and be controlled by, parameters in the Experience's URL. It can be used to remember user's actions between pages or to trigger actions like showing layers or jumping to anchor points when the Experience is opened by the user.
+
+### How to use this plugin:
+
+1. Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio, or add it to the HTML page that you're embedding Ceros in.
+ 
+```
+<script id="ceros-stateful-layers-plugin" src="//sdk.ceros.com/state-of-the-layer/main-v0.js"></script>
+```
+
+2. Create a hot spot in the Studio that performs an action that you would like to trigger via a parameter in the URL.
+ 
+3. Use the SDK Inspector Pallet to tag the hot spot with a name and a value to be used as the URL parameter. For example if you wanted to show the second slide in a slide show, you could tag it `slide=2` - this would allow you to trigger this action by adding `#side=2` to the end of the URL.
+
+4. If you would like to be able to update the URL based on user's actions in the Studio, tag components with `set-state` and set the pay load to the name/value pair you would like to add to the URL.
