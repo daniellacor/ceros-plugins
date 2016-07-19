@@ -71,6 +71,13 @@ module.exports = function(grunt) {
                     pkg: grunt.file.readJSON('src/marketo-munchkin/version.json')
                 },
                 src: ['dist/plugins/marketo-munchkin/*.js']
+            },
+            "url-params": {
+                options: {
+                    prefix: '@version *',
+                    pkg: grunt.file.readJSON('src/url-params/version.json')
+                },
+                src: ['dist/plugins/url-params/*.js']
             }
         },
         watch: {
@@ -118,6 +125,15 @@ module.exports = function(grunt) {
                     include: ['highlander'],
                     optimize: 'none',
                     out: './dist/plugins/highlander/main.js',
+                    skipSemiColonInsertion: true
+                }
+            },
+            compile_url_params_plugin: {
+                options: {
+                    baseUrl: './src/url-params',
+                    include: ['url-params'],
+                    optimize: 'none',
+                    out: './dist/plugins/url-params/main.js',
                     skipSemiColonInsertion: true
                 }
             }
@@ -174,6 +190,13 @@ module.exports = function(grunt) {
                     cwd: './',
                     verbose: true,
                     tag: 'marketo-munchkin-' + String(grunt.file.readJSON('src/marketo-munchkin/version.json').version)
+                }
+            },
+            tagUrlParams: {
+                options: {
+                    cwd: './',
+                    verbose: true,
+                    tag: 'url-params-' + String(grunt.file.readJSON('src/url-params/version.json').version)
                 }
             }
         },
@@ -237,7 +260,7 @@ module.exports = function(grunt) {
             branchFileModifier = '-' + grunt.option('branch').replace('/', '-');
         }
 
-        var plugins = ['eloqua', 'marketo-munchkin', 'soundjs', 'highlander'];
+        var plugins = ['eloqua', 'marketo-munchkin', 'soundjs', 'highlander', 'url-params'];
         _.each(plugins, function(type){
 
             var version = String(grunt.file.readJSON('src/' + type +'/version.json').version);
