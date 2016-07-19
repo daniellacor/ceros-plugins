@@ -17,7 +17,7 @@
     "use strict";
 
     /**
-     * Class to mange state represented in the URL
+     * Class to manage state represented in the URL
      *
      * @constructor
      */
@@ -26,21 +26,19 @@
         var hash = window.location.hash;
 
         // The State represented in the URL, and the order its keys were added
-        this.state = {};
-        this.keyOrder = [];
+        this.state = [];
 
         // If the current has has anything in it
         if (hash.length > 0) {
 
             // Remove leading # symbol
-            var replaceLeadingDelimiters = new RegExp("^#");
-            hash = hash.replace(replaceLeadingDelimiters, "");
+            hash = hash.replace(/^#/, "");
 
             // Spit string into key=value pairs
             var items = hash.split("&");
 
             // For every pair
-            for (var i = 0; i < items.length; i ++){
+            for (var i = 0; i < items.length; i++){
 
                 // Split into key and value
                 var subItems = items[i].split("=");
@@ -48,15 +46,10 @@
                 // If there were two
                 if (subItems.length == 2) {
 
-                    // Decode special characters
-                    var theKey = decodeURIComponent(subItems[0]),
-                        theValue = decodeURIComponent(subItems[1]);
-
-                    // If we haven't had this key already, add it to the current state
-                    if (this.keyOrder.indexOf(theKey) == -1) {
-                        this.state[theKey] = theValue;
-                        this.keyOrder.push(theKey);
-                    }
+                    this.setParameterValueForKey(
+                        decodeURIComponent(subItems[0]),
+                        decodeURIComponent(subItems[1])
+                    );
 
                 }
             }
@@ -75,10 +68,9 @@
             var tags = [];
 
             // Build array of tags
-            for (var i = 0; i < this.keyOrder.length; i++) {
-                var theKey = this.keyOrder[i];
-                tags.push(theKey + "=" + this.state[theKey]);
-            }
+            this.state.forEach(function(tag) {
+                tags.push(tag.key + "=" +  tag.value);
+            });
 
             return tags;
         },
@@ -88,21 +80,23 @@
          *
          * @returns {string}
          */
-        getUrlHash: function() {
+        buildHashFromCurrentState: function() {
 
-            var value = "";
+            var value = "",
+                i = 0;
 
-            for (var i = 0; i < this.keyOrder.length; i++) {
+            this.state.forEach(function(tag) {
 
-                var theKey = this.keyOrder[i];
-
+                // If not first iteration
                 if (i != 0) {
                     value += "&";
                 }
 
                 // Encode values to make the URL safe
-                value += encodeURIComponent(theKey) + "=" + encodeURIComponent(this.state[theKey]);
-            }
+                value += encodeURIComponent(tag.key) + "=" + encodeURIComponent(tag.value);
+
+                i++;
+            });
 
             return value;
         },
@@ -113,23 +107,61 @@
          * @param {string} theKey
          * @param {string} theValue
          */
-        setItemValue: function(theKey, theValue) {
+        setParameterValueForKey: function(theKey, theValue) {
 
-            // If we don't have this item already
-            if (this.keyOrder.indexOf(theKey) == -1) {
-                this.keyOrder.push(theKey);
+            // If we have this key already
+            if (this.hasKey(theKey)) {
+
+                // Find it in array and update its value
+                for (var i = 0; i < this.state.length; i++) {
+
+                    if (this.state[i].key == theKey) {
+                        this.state[i].value = theValue;
+
+                        break;
+                    }
+
+                }
+
+            } else {
+                // Add as new object
+                this.state.push({
+                    key:   theKey,
+                    value: theValue
+                });
+            }
+        },
+
+        /**
+         * Test to see if key is defined
+         *
+         * @param {string} theKey
+         * @returns {boolean}
+         */
+        hasKey: function(theKey) {
+
+            var foundKey = false;
+
+            for (var i = 0; i < this.state.length; i++) {
+
+                var currentItem = this.state[i];
+
+                if (currentItem.key == theKey) {
+                    foundKey = true;
+
+                    break;
+                }
+
             }
 
-            this.state[theKey] = theValue;
-
-            this.updateUrl();
+            return foundKey
         },
 
         /**
          * Apply the current hash to the URL
          */
         updateUrl: function() {
-            window.location.hash = this.getUrlHash();
+            window.location.hash = this.buildHashFromCurrentState();
         }
     };
 
@@ -146,6 +178,23 @@
      * @type {string|null}
      */
     var experienceId = null;
+
+    /**
+     * Parse a tag and update the URL with its name/value
+     *
+     * @param {string} tag
+     */
+    var updateUrlWithTag = function(tag) {
+
+        // Parse tag into its name and value
+        var parts = tag.split("=");
+
+        // If valid, add it to the current state
+        if (parts.length == 2) {
+            urlManager.setParameterValueForKey(parts[0], parts[1]);
+            urlManager.updateUrl();
+        }
+    };
 
     /**
      * Function that runs when both DOM and SDK are ready
@@ -169,13 +218,8 @@
 
                 if (payload.match(validStateTag)) {
 
-                    // Parse payload into its name and value
-                    var parts = payload.split("=");
+                    updateUrlWithTag(payload);
 
-                    // If valid, add it to the current state
-                    if (parts.length == 2) {
-                        urlManager.setItemValue(parts[0], parts[1]);
-                    }
                 }
             });
 
@@ -188,14 +232,14 @@
                 urlManager.updateUrl();
 
                 // Get tags that need to be activated, based on current URL
-                var tagsToShow = urlManager.getTagsForCurrentState();
+                var hotspotTagsToClick = urlManager.getTagsForCurrentState();
 
                 // For every tag...
-                for (var tagIndex = 0; tagIndex < tagsToShow.length; tagIndex++) {
-
+                hotspotTagsToClick.forEach(function(tag) {
                     // Find in Ceros and send click event to activate tag
-                    experience.findComponentsByTag(tagsToShow[tagIndex]).click();
-                }
+                    experience.findComponentsByTag(tag).click();
+                });
+
             };
 
             // Subscribe to Page Change events
@@ -216,13 +260,12 @@
 
         // Find the plugin's script tag by its ID, and see if there is a Ceros embed on the page
         var ourScriptTag = document.querySelector("#ceros-stateful-layers-plugin"),
-            firstCerosFrame = document.querySelector("iframe.ceros-experience");
+            embeddedExperience = document.querySelector("iframe.ceros-experience");
 
         // Are we running standalone?
         var standAloneMode = true;
 
-        // If we found a Ceros embed, then we're running embedded
-        if (firstCerosFrame) {
+        if (embeddedExperience) {
 
             standAloneMode = false;
 
@@ -233,9 +276,9 @@
 
             } else { // try to use the Experience ID from the first Ceros embed on page
 
-                if (firstCerosFrame.parentNode && firstCerosFrame.parentNode.hasAttribute("id")) {
+                if (embeddedExperience.parentNode && embeddedExperience.parentNode.hasAttribute("id")) {
 
-                    experienceId = firstCerosFrame.parentNode.getAttribute("id");
+                    experienceId = embeddedExperience.parentNode.getAttribute("id");
 
                 } else { // Log error and stop running...
 
