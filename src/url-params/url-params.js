@@ -4,11 +4,12 @@
  * @support support@ceros.com
  *
  * This plugin allows people using the Ceros Studio's SDK pallet to tag components
- * to enable them to both control, and be controlled by, parameters in
- * the Experience's URL. It can be used to remember user's actions
- * between pages or to trigger actions like showing layers or
- * jumping to anchor points when the Experience is opened
- * by the user.
+ * to enable them to both control, and be controlled by, parameters in the
+ * Experience's URL. It can be used to show different layers, based on parameters in the URL,
+ * or even adjust the an Experience's control position.
+ *
+ * The plugin works by using the parameters in the URL to find hotspots with matching tags in
+ * the Experience and sending them click events to trigger any applied actions.
  *
  * This plugin is licensed under the MIT license. A copy of this license and
  * the accompanying source code is available at https://github.com/ceros/ceros-plugins
@@ -259,7 +260,7 @@
     var onDomReady = function() {
 
         // Find the plugin's script tag by its ID, and see if there is a Ceros embed on the page
-        var ourScriptTag = document.querySelector("#ceros-stateful-layers-plugin"),
+        var ourScriptTag = document.querySelector("#ceros-url-params-plugin"),
             embeddedExperience = document.querySelector("iframe.ceros-experience");
 
         // Are we running standalone?
