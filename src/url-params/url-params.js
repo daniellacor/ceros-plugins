@@ -186,9 +186,9 @@
     /**
      * Parse a tag and update the URL with its name/value
      *
-     * @param {string} tag
+     * @param {CerosComponent} component
      */
-    var updateUrlWithComponentPayload = function(tag){
+    var updateUrlWithComponentPayload = function(component){
 
         // Get and validate the component's payload
         var payload = component.getPayload();
@@ -196,7 +196,7 @@
         if (payload.match(validStateTag)) {
 
             // Parse tag into its name and value
-            var parts = tag.split("=");
+            var parts = payload.split("=");
 
             // If valid, add it to the current state
             if (parts.length == 2) {
