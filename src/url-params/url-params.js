@@ -141,21 +141,17 @@
          */
         hasKey: function(theKey) {
 
-            var foundKey = false;
-
             for (var i = 0; i < this.state.length; i++) {
 
                 var currentItem = this.state[i];
 
                 if (currentItem.key == theKey) {
-                    foundKey = true;
-
-                    break;
+                    return true;
                 }
 
             }
 
-            return foundKey
+            return false;
         },
 
         /**
@@ -181,19 +177,33 @@
     var experienceId = null;
 
     /**
+     * Regular expression to validate payloads
+     *
+     * @type {RegExp}
+     */
+    var validStateTag = new RegExp("[^=]+=[^=]+");
+
+    /**
      * Parse a tag and update the URL with its name/value
      *
      * @param {string} tag
      */
-    var updateUrlWithTag = function(tag) {
+    var updateUrlWithComponentPayload = function(tag){
 
-        // Parse tag into its name and value
-        var parts = tag.split("=");
+        // Get and validate the component's payload
+        var payload = component.getPayload();
 
-        // If valid, add it to the current state
-        if (parts.length == 2) {
-            urlManager.setParameterValueForKey(parts[0], parts[1]);
-            urlManager.updateUrl();
+        if (payload.match(validStateTag)) {
+
+            // Parse tag into its name and value
+            var parts = tag.split("=");
+
+            // If valid, add it to the current state
+            if (parts.length == 2) {
+                urlManager.setParameterValueForKey(parts[0], parts[1]);
+                urlManager.updateUrl();
+            }
+
         }
     };
 
@@ -208,21 +218,10 @@
             // Find items that set the state
             var componentCollection = experience.findComponentsByTag("set-state");
 
-            // Regular expression to validate payloads
-            var validStateTag = new RegExp("[^=]+=[^=]+");
 
-            // When a user interacts with a tagged component
-            componentCollection.subscribe(CerosSDK.EVENTS.CLICKED, function(component) {
 
-                // Get and validate the component's payload
-                var payload = component.getPayload();
-
-                if (payload.match(validStateTag)) {
-
-                    updateUrlWithTag(payload);
-
-                }
-            });
+            // When a user interacts with a tagged component update the URL with its payload
+            componentCollection.subscribe(CerosSDK.EVENTS.CLICKED, updateUrlWithComponentPayload);
 
 
             /**

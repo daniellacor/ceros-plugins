@@ -87,6 +87,6 @@ The plugin works by using the parameters in the URL to find hotspots with matchi
 
 2. Create a hot spot in the Studio that performs an action that you would like to trigger via a parameter in the URL.
  
-3. Use the SDK Inspector Pallet to tag the hot spot with a name and a value to be used as the URL parameter. For example if you wanted to show the second slide in a slide show, you could tag it `slide=2` - this would allow you to trigger this action by adding `side=2` to the end of the URL, after a `#` symbol.
+3. Use the SDK Inspector Pallet to tag the hot spot with a name and a value to be used as the URL parameter. For example if you wanted to show the second slide in a slide show, you could tag it `slide=2` - this would allow you to trigger this action by adding `#slide=2` to the end of the URL.
  
-4. If you would like to be able to update the URL based on user's actions in the Studio, tag components with `set-state` and set the pay load to the name/value pair you would like to add to the URL. This will then be passed to other pages the user visits in your Experience.  
+4. If you would like to be able to update the URL based on user's actions in the Studio, tag components with `set-state` and set the payload to the name/value pair you would like to add to the URL. This will then be passed to other pages the user visits in your Experience. See [The Ceros Academy](https://www.ceros.com/academy/how-to/basic-concepts/#user-content-working-with-the-studio) for more information on working with tags and payloads.
