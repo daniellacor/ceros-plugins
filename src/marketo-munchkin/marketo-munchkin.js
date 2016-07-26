@@ -7,21 +7,21 @@
  * the accompanying source code is available at https://github.com/ceros/ceros-plugins
  */
 (function() {
-    if (typeof(CerosSDK) === "undefined") {
-        var sdkScript = document.createElement('script');
-        sdkScript.type = "text/javascript";
-        sdkScript.async = true;
-        sdkScript.onload = activateMarketoMunchkinTracking;
-        sdkScript.src = "//sdk.ceros.com/standalone-player-sdk-v3.js";
 
-        document.getElementsByTagName('head')[0].appendChild(sdkScript);
-    }
-    else {
-        activateMarketoMunchkinTracking();
-    }
+    require.config({
+        shim: {
+            Munchkin: {
+                exports: 'Munchkin'
+            }
+        },
+        
+        paths: { 
+            Munchkin: "//munchkin.marketo.net/munchkin",
+            CerosSDK: "//sdk.ceros.com/standalone-player-sdk-v3",        
+        }
+    });
 
-
-    function activateMarketoMunchkinTracking() {
+    require(['Munchkin', 'CerosSDK'], function (Munchkin, CerosSDK) {
         var pluginScriptTag = document.getElementById("ceros-marketo-munchkin-plugin");
         var accountId = pluginScriptTag.getAttribute("accountId");
 
@@ -29,19 +29,7 @@
             console.error("Account ID is required for the Ceros Munchkin plugin.");
         }
 
-        function initMunchkin() {
-            Munchkin.init(accountId);
-        }
-
-        //load the Marketo script then initialize
-        var munchkinScript = document.createElement('script');
-        munchkinScript.type = "text/javascript";
-        munchkinScript.async = true;
-        munchkinScript.onload = initMunchkin;
-        munchkinScript.src = '//munchkin.marketo.net/munchkin.js';
-
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(munchkinScript, firstScriptTag);
+        Munchkin.init(accountId);
 
         // Register a page change event handler
         CerosSDK.findExperience().fail(function(err){
@@ -62,6 +50,6 @@
 
             });
         });
-    }
+    });
 })();
 

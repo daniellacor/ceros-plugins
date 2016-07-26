@@ -15,19 +15,13 @@
 
 (function() {
 
-    if (typeof(CerosSDK) === "undefined") {
-        var sdkScript = document.createElement('script');
-        sdkScript.type = "text/javascript";
-        sdkScript.async = true;
-        sdkScript.onload = activateHighlander;
-        sdkScript.src = "//sdk.ceros.com/standalone-player-sdk-v3.js";
+    require.config({
+        paths: { 
+            CerosSDK: "//sdk.ceros.com/standalone-player-sdk-v3",
+        }
+    });
 
-        document.getElementsByTagName('head')[0].appendChild(sdkScript);
-    } else {
-        activateHighlander();
-    }
-
-    function activateHighlander() {
+    require(['CerosSDK'], function (CerosSDK) { 
         CerosSDK.findExperience().done(function(cerosExperience) {
             var pluginScriptTag = document.getElementById("ceros-highlander-plugin");
             var highlanderTags = pluginScriptTag.getAttribute("highlanderTags").split(',');
@@ -43,5 +37,5 @@
             	});
             });
         });
-    }
+    });
 })();

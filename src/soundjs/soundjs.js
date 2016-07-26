@@ -19,29 +19,22 @@
 
 (function() {
 
-    if (typeof(CerosSDK) === "undefined") {
-        var sdkScript = document.createElement('script');
-        sdkScript.type = "text/javascript";
-        sdkScript.async = true;
-        sdkScript.onload = activatePlaySound;
-        sdkScript.src = "//sdk.ceros.com/standalone-player-sdk-v3.js";
+    require.config({
 
-        document.getElementsByTagName('head')[0].appendChild(sdkScript);
-    } else {
-        activatePlaySound();
-    }
+        shim: {
+            SoundJS: {
+                exports: 'createjs'
+            }
+        },
 
-    function loadSoundJs() {
-        var soundScript = document.createElement('script');
-        soundScript.type = "text/javascript";
-        soundScript.async = true;
-        soundScript.src = "//code.createjs.com/soundjs-0.6.2.min.js";
-        document.body.appendChild(soundScript);
-    }
+        paths: { 
+            CerosSDK: "//sdk.ceros.com/standalone-player-sdk-v3",        
+            SoundJS: "https://code.createjs.com/soundjs-0.6.2.min",
+        }
+        
+    });
 
-    function activatePlaySound() {
-        loadSoundJs();
-
+    require(['CerosSDK', 'SoundJS'], function (CerosSDK, createjs) {
         CerosSDK.findExperience().done(function(cerosExperience) {
             var pluginScriptTag = document.getElementById("ceros-soundjs-plugin");
             var soundTag = pluginScriptTag.getAttribute("soundTag");
@@ -53,6 +46,6 @@
                 createjs.Sound.play(clickedComponent.id);
             });
         });
-    }
+    });
 })();
 
