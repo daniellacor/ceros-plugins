@@ -41,27 +41,12 @@
             sounds = {};
             background = {};
 
-
+            //BASIC SOUND MANIPULATION FUNCTIONS
             var play = function(soundId){
                 sounds[soundId].play();
                 sounds[soundId].active = true;
-
             };
 
-            var toggle = function(soundId){
-
-                if (!sounds[soundId].active){
-                    play(soundId);
-
-                }
-                else if (sounds[soundId].paused){
-                    resume(soundId);
-                }
-                else {
-                    pause(soundId);
-                }
-
-            };
 
             var pause = function(soundId){
                 sounds[soundId].paused = true;
@@ -71,57 +56,35 @@
                 sounds[soundId].paused = false;
             };
 
-            var stackPlay = function(soundId){
-                createjs.Sound.play(soundId);
-            };
 
-            var stop = function(soundId){
+            var stopSound = function(soundId){ //resets song to beginning
                 sounds[soundId].stop();
                 sounds[soundId].active = false; //note this does not fire 
             };
 
-            var loop = function(soundId){
-                sounds[soundId].loop = -1;
-                play(soundId);
-            };
-
-            var loopToggle = function(soundId){
-                sounds[soundId].loop = -1;
-                if (!sounds[soundId].active){
-                    play(soundId);
-
-                }
-                else if (sounds[soundId].paused){
-                    resume(soundId);
-                }
-                else {
-                    pause(soundId);
-                }                
-            }
-
-            var mute = function(soundId){
-                console.log(sounds[soundId].muted);
-                if (sounds[soundId].muted){
-                    sounds[soundId].muted = false;
-                }
-                else {
-                    sounds[soundId].muted = true;
-                }
-            }
 
 
-            //EVENT HANDLERS
+            //NATIVE EVENTS HANDLERS
 
             var handleComplete = function(evt, data){
                 sounds[data.soundId].active = false;
             };
 
+
+            //EVENT HANDLERS
+
             var handleMute = function(evt, data){
-                mute(data.soundId);
+                if (sounds[data.soundId].muted){
+                    sounds[data.soundId].muted = false;
+                }
+                else {
+                    sounds[data.soundId].muted = true;
+                }
             };
 
             var handlePlay = function(evt, data){
-                play(data.soundId);
+                sounds[data.soundId].play();
+                sounds[data.soundId].active = true;
             };
 
             var handlePause = function(evt, data){
@@ -129,22 +92,47 @@
             };
 
             var handleToggle = function(evt, data){
-                toggle(data.soundId);
+                if (!sounds[data.soundId].active){
+                    play(data.soundId);
+
+                }
+                else if (sounds[data.soundId].paused){
+                    resume(data.soundId);
+                }
+                else {
+                    pause(data.soundId);
+                }
+
             };
 
-            var handleStop = function(evt, data){
-                stop(data.soundId);
+            var handleReset = function(evt, data){
+                if (!sounds[data.soundId].active){
+                    play(data.soundId);
+
+                }
+                else {
+                    stopSound(data.soundId);
+                }            
             };
 
             var handleLoop = function(evt, data){
-                loop(data.soundId);
+                sounds[soundId].loop = -1;
+                play(soundId);
             };
 
             var handleLoopToggle = function(evt, data){
-                loopToggle(data.soundId);
+                sounds[soundId].loop = -1;
+                handleToggle(evt, data);
             };
 
-            //EVENT DISPATCHER
+            var handleStackPlay = function(evt, data){
+                createjs.Sound.play(data.soundId);
+            };
+
+
+
+
+            //EVENT DISPATCHERS
 
             var dispatchAll = function(evt){
                 _.forEach(sounds, function(value, key){
@@ -163,12 +151,16 @@
             var soundTag = pluginScriptTag.getAttribute("soundTag");
             var componentsWithSound = cerosExperience.findComponentsByTag(soundTag);
             var componentsWithEvent = cerosExperience.findComponentsByTag("sound-click");
+            var rollovers = cerosExperience.findComponentsByTag("sound-rollover");
 
 
-            jQuery.each(componentsWithSound.components, function (soundComponentIndex, soundComponent) {
+            _.forEach(componentsWithSound.components, function (soundComponent, soundComponentIndex) {
+                // debugger;
                 createjs.Sound.registerSound(soundComponent.getPayload(), soundComponent.id);
+
                 sounds[soundComponent.id] = createjs.Sound.createInstance(soundComponent.id);
                 sounds[soundComponent.id]['active'] = false;
+                sounds[soundComponent.id]['shown'] = false;
 
                 //the data that will be passed to each 
                 var data = {'soundId': soundComponent.id};
@@ -177,13 +169,61 @@
                 sounds[soundComponent.id].on("mute", handleMute, null, false, data);
                 sounds[soundComponent.id].on("play", handlePlay, null, false, data);
                 sounds[soundComponent.id].on("pause", handlePause, null, false, data);
-                sounds[soundComponent.id].on("stop", handleStop, null, false, data);
+                sounds[soundComponent.id].on("reset", handleReset, null, false, data);
                 sounds[soundComponent.id].on("toggle", handleToggle, null, false, data);
                 sounds[soundComponent.id].on("loop", handleLoop, null, false, data);
                 sounds[soundComponent.id].on("looptoggle", handleLoopToggle, null, false, data);
 
             });
+            console.log("asdfasdfasdf");
+            // console.log(layersWithSound);
+            // _.forEach(layersWithSound.layers, function (soundLayer, soundLayerIndex) {
+            //     createjs.Sound.registerSound(soundLayer.getPayload(), soundLayer.id);
+            //     sounds[soundLayer.id] = createjs.Sound.createInstance(soundLayer.id);
+            //     sounds[soundLayer.id]['active'] = false;
 
+            //     //the data that will be passed to each 
+            //     var data = {'soundId': soundLayer.id};
+            //     //attaches default global listeners
+            //     // sounds[soundComponent.id].on("complete", handleComplete, null, false, data);
+            //     // sounds[soundComponent.id].on("mute", handleMute, null, false, data);
+            //     sounds[soundLayer.id].on("play", handlePlay, null, false, data);
+            //     // sounds[soundLayer.id].on("pause", handlePause, null, false, data);
+            //     sounds[soundLayer.id].on("reset", handleReset, null, false, data);
+            //     // sounds[soundComponent.id].on("toggle", handleToggle, null, false, data);
+            //     // sounds[soundComponent.id].on("loop", handleLoop, null, false, data);
+            //     // sounds[soundComponent.id].on("looptoggle", handleLoopToggle, null, false, data);
+
+            // });
+
+            // myExperience.subscribe(CerosSDK.EVENTS.SHOWN, function (layer) {
+            //     console.log("sasdfasdfasdf");
+            //     dispatchEvent("play", layer.id);
+            // });      
+
+
+            // myExperience.subscribe(CerosSDK.EVENTS.HIDDEN, function (layer) {
+            //     dispatchEvent("stop", layer.id);
+            // });
+
+            //could use debounce if animation ended triggers repeatedly on repeated entry animations
+            var shown = false;
+            cerosExperience.subscribe(CerosSDK.EVENTS.ANIMATION_STARTED, function (component){
+
+                //console.log(sounds[component.id].shown);
+  
+                if (!sounds[component.id].shown) {
+                    sounds[component.id].shown = true;
+                    dispatch("play", component.id);
+
+                    console.log("shown");
+                }
+                else {
+                    sounds[component.id].shown = false;
+                    dispatch("pause", component.id);
+                    console.log("hidden");
+                }
+            });
 
             componentsWithEvent.subscribe(CerosSDK.EVENTS.CLICKED, function (component) {
                 var evt;
@@ -200,6 +240,8 @@
                 });
                 //dispatch(evt, component.id);  Use for only 
             });
+
+
 
 
 
