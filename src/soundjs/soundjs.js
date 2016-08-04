@@ -38,34 +38,36 @@
     require(['CerosSDK', 'SoundJS', 'loDash'], function (CerosSDK, createjs, _) {
         CerosSDK.findExperience().done(function(cerosExperience) {
 
-            sounds = {};
-            background = {};
+            var sounds = {};
+            var names = {};
 
             // BASIC SOUND MANIPULATION FUNCTIONS
-            var play = function(soundId){
-                sounds[soundId].play();
-                sounds[soundId].active = true;
+            //currently disables interrupt, but can change
+            var play = function(data){
+                if (!sounds[data.soundId].active || data.config.interrupt){
+                    sounds[data.soundId].play(data.config);
+                    sounds[data.soundId].active = true;
+
+                }
             };
 
-
-            var pause = function(soundId){
-                sounds[soundId].paused = true;
+            var pause = function(data){
+                sounds[data.soundId].paused = true;
             };
 
-            var resume = function(soundId){
-                sounds[soundId].paused = false;
+            var resume = function(data){
+                sounds[data.soundId].paused = false;
             };
 
-
-            var stopSound = function(soundId){ // resets song to beginning
-                sounds[soundId].stop();
-                sounds[soundId].active = false; // note this does not fire 
+            var stopSound = function(data){ // resets song to beginning
+                sounds[data.soundId].stop();
+                sounds[data.soundId].active = false; // note this does not fire 
             };
 
 
 
             // NATIVE EVENTS HANDLERS
-
+            //cleans up extra data handled by us
             var handleComplete = function(evt, data){
                 sounds[data.soundId].active = false;
             };
@@ -83,39 +85,40 @@
             };
 
             var handlePlay = function(evt, data){
-                play(data.soundId);
+                play(data);
             };
 
             var handlePause = function(evt, data){
-                pause(data.soundId);
+                pause(data);
             };
 
             var handleToggle = function(evt, data){
+
                 if (!sounds[data.soundId].active){
-                    play(data.soundId);
+                    play(data);
 
                 }
                 else if (sounds[data.soundId].paused){
-                    resume(data.soundId);
+                    resume(data);
                 }
                 else {
-                    pause(data.soundId);
+                    pause(data);
                 }
             };
 
             var handleReset = function(evt, data){
                 if (!sounds[data.soundId].active){
-                    play(data.soundId);
+                    play(data);
 
                 }
                 else {
-                    stopSound(data.soundId);
+                    stopSound(data);
                 }            
             };
 
             var handleLoop = function(evt, data){
                 sounds[data.soundId].loop = -1;
-                play(soundId);
+                play(data);
             };
 
             var handleLoopToggle = function(evt, data){
@@ -131,29 +134,130 @@
 
             // EVENT DISPATCHERS
 
-            var dispatchAll = function(evt){
+            var dispatchAll = function (evt) {
                 _.forEach(sounds, function(value, key){
                     value.dispatchEvent(evt);
                 });
             };
 
-            var dispatch = function(evt, soundId){
-                sounds[soundId].dispatchEvent(evt);
+            var dispatch = function (evt, soundIds) {
+                for (var i = 0; i < soundIds.length; i++){
+                    if (sounds.hasOwnProperty(soundIds[i])){
+                        sounds[soundIds[i]].dispatchEvent(evt);
+                    }
+                }
             };
 
-            var parseTags = function(component){
-                var evt;
+            var acquireTargets = function (component) {
+
                 var tags = component.getTags();
+                var targets = [];
+
+                _.forEach(tags, function(value, key){
+                    if (value.indexOf("target:") > -1){
+                        var target = value.slice(7, value.length);
+                        targets.push(target);
+                    }     
+                });
+
+
+                //must check if each of the targets is an id or name
+                //replaces targets that are names with the component ids
+                
+                for (var i = 0; i < targets.length; i++){
+                    if (names.hasOwnProperty(targets[i])){
+                        targets[i] = names[targets[i]];
+                    }
+                }
+                
+                if (targets.length == 0) {
+                    targets.push(component.id);
+                }
+
+                return targets;
+
+            };
+
+            var parseEventTags = function (component){
+                var evt = null;
+
+                var tags = component.getTags();
+
+                var soundIds = acquireTargets(component);
+
                 _.forEach(tags, function(value, key){
                     if (value.indexOf("event:") > -1){
                         evt = value.slice(6, value.length);
-                        dispatch(evt, component.id);
+                        dispatch(evt, soundIds);
                     }
                     else if (value.indexOf("eventall:") > -1){
                         evt = value.slice(9, value.length);
                         dispatchAll(evt);
                     }
+                    
                 });
+            };
+
+
+            var parseSoundData = function (component) {
+
+  
+                var data = {'soundId': component.id, config: {}};
+
+                //Default configs
+                var start = 0,
+                    duration = null,
+                    interrupt = true;
+
+
+                var tags = component.getTags();
+
+                // POTENTIALLY CHANGE TO SECONDS
+
+                _.forEach(tags, function(value, key){
+                    // Check the start time/duration of elements
+                    // unit = milliseconds
+                    if (value.indexOf("start:") > -1){
+                        start = parseInt(value.slice(6, value.length));
+                    }
+                    else if (value.indexOf("end:") > -1){
+                        var end = parseInt(value.slice(4, value.length));
+                        duration = end - start;
+                    }
+                    else if (value.indexOf("name:") > -1) {
+                        var name = value.slice(5, value.length);
+                        names[name] = component.id;
+                    }
+                    else if (value.indexOf("interrupt:") > -1) {
+                        var val = value.slice(10, value.length);
+                        if (val == "false"){
+                            interrupt = false;
+                        }
+                    }
+                });
+
+                //Setting configs //interrupt could use more work
+                data.config['interrupt'] = interrupt;
+                data.config['offset'] = start;
+                data.config['duration'] = duration;
+                return data;         
+
+            };
+
+
+            var setEvents = function (componentId, data) {
+                //the data that will be passed to each 
+
+                //attaches all default listeners
+                sounds[componentId].on("complete", handleComplete, null, false, data);
+                sounds[componentId].on("mute", handleMute, null, false, data);
+                sounds[componentId].on("play", handlePlay, null, false, data);
+                sounds[componentId].on("pause", handlePause, null, false, data);
+                sounds[componentId].on("reset", handleReset, null, false, data);
+                sounds[componentId].on("toggle", handleToggle, null, false, data);
+                sounds[componentId].on("loop", handleLoop, null, false, data);
+                sounds[componentId].on("looptoggle", handleLoopToggle, null, false, data);
+
             };
 
 
@@ -161,59 +265,29 @@
             var soundTag = pluginScriptTag.getAttribute("soundTag");
             var componentsWithSound = cerosExperience.findComponentsByTag(soundTag);
             var componentsWithEvent = cerosExperience.findComponentsByTag("sound-click");
-            var rollovers = cerosExperience.findComponentsByTag("sound-rollover");
-            var background = cerosExperience.findComponentsByTag("background");
 
+
+            //Registers all the sounds/ pushes them to the sound storage object.. keys = component id's
             _.forEach(componentsWithSound.components, function (soundComponent, soundComponentIndex) {
                 createjs.Sound.registerSound(soundComponent.getPayload(), soundComponent.id);
 
+                
+                //SET OFFSET AND DURATION HERE, RATHER THAN PASSING DATA AROUND
                 sounds[soundComponent.id] = createjs.Sound.createInstance(soundComponent.id);
                 sounds[soundComponent.id]['active'] = false;
                 sounds[soundComponent.id]['shown'] = false;  // Used for hover effects
 
-                //the data that will be passed to each 
-                var data = {'soundId': soundComponent.id};
-                //attaches default global listeners
-                sounds[soundComponent.id].on("complete", handleComplete, null, false, data);
-                sounds[soundComponent.id].on("mute", handleMute, null, false, data);
-                sounds[soundComponent.id].on("play", handlePlay, null, false, data);
-                sounds[soundComponent.id].on("pause", handlePause, null, false, data);
-                sounds[soundComponent.id].on("reset", handleReset, null, false, data);
-                sounds[soundComponent.id].on("toggle", handleToggle, null, false, data);
-                sounds[soundComponent.id].on("loop", handleLoop, null, false, data);
-                sounds[soundComponent.id].on("looptoggle", handleLoopToggle, null, false, data);
-            });
-            // could use debounce if animation ended triggers repeatedly on repeated entry animations
+                var data = parseSoundData(soundComponent);
 
-            cerosExperience.subscribe(CerosSDK.EVENTS.ANIMATION_STARTED, function (component){
-  
-                if(sounds.component.id != null){
-                    if (!sounds[component.id].shown) {
-                        sounds[component.id].shown = true;
-                        parseTags(component);
-                    }
-                    else {
-                        sounds[component.id].shown = false;
-                        parseTags(component);
-                    }
-                }
+                setEvents(soundComponent.id, data);
+
+
             });
 
-
-            componentsWithEvent.subscribe(CerosSDK.EVENTS.CLICKED, function (component){
-                parseTags(component);
+            componentsWithEvent.subscribe(CerosSDK.EVENTS.CLICKED, function (component) {
+                parseEventTags(component);
             });
 
-            var startBackgroundNoise = function(soundComponents){
-                debugger;
-                var soundComponent = soundComponents.components[0];
-                createjs.Sound.registerSound(soundComponent.getPayload(), soundComponent.id);
-
-                createjs.Sound.play(soundComponent.id);
-                        
-            };
-
-            startBackgroundNoise(background);
 
         });
     });
