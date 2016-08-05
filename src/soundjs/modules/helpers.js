@@ -17,10 +17,11 @@ define(['lodash'], function (_) {
            	var componentOptions = this.parseArrayOfTags(component.getTags());
 
            	//NOTE MAY HAVE TO USE _.defaultsDeep
-           	return _.defaults(
+           	var test = _.defaultsDeep(
                	componentOptions,
                	componentDefaults
            	);
+           	return test;
 
        	},
 
@@ -40,7 +41,19 @@ define(['lodash'], function (_) {
 
                	// If tag matched naming convention
                	if (matches) {
-                   result[matches[1]] = matches[2];
+               		//needs some exceptions
+               		if (matches[1] == "start" || matches[1] == "duration") {
+               			matches[2] = parseInt(matches[2]);
+               		}
+               		else if (matches[1] == "interrupt"){
+               			if (matches[2] == "false"){
+               				matches[2] = false;
+               			}
+               			else {
+               				matches[2] = true;
+               			}
+               		}
+                   	result[matches[1]] = matches[2];
                	}
            	}
 

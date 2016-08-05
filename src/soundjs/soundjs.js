@@ -108,7 +108,6 @@
             var componentsWithEvent = cerosExperience.findComponentsByTag("sound-click");
 
             var sounds = new SoundComponents(componentsWithSound);
-            sounds.initialize();
 
 
 
