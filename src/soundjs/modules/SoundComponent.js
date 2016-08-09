@@ -2,9 +2,55 @@
 define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers) {
 	'use strict';	
 
+
+
+	var cerosPlay = function () {
+
+  		// var ppc = new createjs.PlayPropsConfig().set({interrupt:createjs.Sound.INTERRUPT_ANY});
+  		console.log(this);
+
+  		if (this.interrupt){
+
+	        this.cerosInterrupt();
+
+    	}
+    	this.play();
+    	this.active = true;
+	};
+
+
+
+	var cerosInterrupt = function () {
+	    if (this.active){           
+        	this.stop();
+        	this.active = false; // note this does not fire 
+        	this.cerosPlay();
+        }   
+	};
+
+
+
+	var backgroundPlay = function (evt, data) {
+		console.log("back play");
+        data.play();
+        data.active = true;
+
+	};
+
+
+	var backgroundLoop = function (evt, data) {
+
+		console.log("back loop");
+		data.loop = -1;
+		data.active = true;
+		data.play();
+	};
+
+
 	var SoundComponent = function (soundComponent) {
 
 		this.soundDefaults = {
+			clickEnabled: false,
 			active: false,
 			shown: false,
 			start: 0,
@@ -23,6 +69,9 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
         // this.sounds[soundComponent.id] = createjs.Sound.createInstance(soundComponent.id, componentOptions.start, component.Options.duration);
         this.sound = createjs.Sound.createInstance(soundComponent.id, componentOptions.start, componentOptions.duration);
 
+
+
+
         //Note, this will not overwrite any original soundComponent options
         //NOTE: THIS MIGHT NOT WORK DUE TO "this" CHANGING
         this.sound = _.defaults(
@@ -30,12 +79,14 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 						componentOptions
 					);
 
+        this.sound['cerosPlay'] = cerosPlay;
+        this.sound['cerosInterrupt'] = cerosInterrupt;
+
+
 
         this.setEvents(soundComponent.id);
 
-
 	};
-
 
 
 
@@ -47,6 +98,7 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 
 		setEvents : function (componentId) {
 
+
 	        //attaches all default listeners
 	        this.sound.on("complete", this.handleComplete, null, false, componentId);
 	        this.sound.on("mute", this.handleMute, null, false, componentId);
@@ -54,30 +106,32 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 	        this.sound.on("pause", this.handlePause, null, false, componentId);
 	        this.sound.on("reset", this.handleReset, null, false, componentId);
 	        this.sound.on("toggle", this.handleToggle, null, false, componentId);
-	        this.sound.on("loop", this.handleLoop, null, false, componentId);
+	        this.sound.on("loop", this.handleLoop, null, false, componentId).bind(this);
 	        this.sound.on("looptoggle", this.handleLoopToggle, null, false, componentId);
+
+	      
+
 
 	    },
 
-
+ 
 		//Basic mainpulation function used a lot
         //currently disables interrupt, but can change
-      	cerosPlay : function(data){
+      	// cerosPlay : function(data){
 
-      		//var ppc = new createjs.PlayPropsConfig().set({interrupt:createjs.Sound.INTERRUPT_ANY});
+      	// 	var ppc = new createjs.PlayPropsConfig().set({interrupt:createjs.Sound.INTERRUPT_ANY});
+      	// 	console.log(this);
 
-
-      		console.log("before");
-            this.play({interrupt:createjs.Sound.INTERRUPT_ANY});
-            //this.active = true;
-      		console.log("after");
+       //      this.play({interrupt:createjs.Sound.INTERRUPT_ANY});
+       //      this.active = true;
             
-        },
+       //  },
 
 
        // NATIVE EVENTS HANDLERS
         //cleans up extra data handled by us
         handleComplete : function(evt, data){
+
             this.active = false;
         },
 
@@ -94,9 +148,7 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
         },
 
         handlePlay : function(evt, data){
-        	console.log(this);
-        	var pcp = new createjs.PlayPropsConfig().set({interrupt: createjs.Sound.INTERRUPT_ANY, loop:-1, volume:0.7});
-            this.play(pcp);
+            this.cerosPlay(data);
         },
 
         handlePause : function(evt, data){
@@ -106,7 +158,7 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
         handleToggle : function(evt, data){
 
             if (!this.active){
-            	this.play({interrupt: createjs.Sound.INTERRUPT_ANY});
+                this.cerosPlay(data);
                 this.active = true;
 
             }
@@ -120,7 +172,7 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 
         handleReset : function(evt, data){
             if (!this.active){
-            this.play({interrupt:createjs.Sound.INTERRUPT_ANY});
+                this.cerosPlay(data);
                 this.active = true;
 
             }
@@ -132,8 +184,7 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 
         handleLoop : function(evt, data){
             this.loop = -1;
-            this.play({interrupt:createjs.Sound.INTERRUPT_ANY});
-            this.active = true;
+            this.cerosPlay();
         },
 
         handleLoopToggle : function(evt, data){
@@ -142,13 +193,18 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
         },
 
         handleStackPlay : function(evt, data){
-            createjs.Sound.play(data);
+            createjs.Sound.cerosPlay(data);
         },
 
         // EVENT DISPATCHER
 
         dispatch : function (evt) {
-        	this.sound.dispatchEvent(evt);
+        	console.log(this);
+        	// Note, dispatchEvent, sends the object it is called on as "this" to the handle function.
+        	// in this case this.sound becomes this in the handle function
+        	if (this.sound.clickEnabled){
+	        	this.sound.dispatchEvent(evt);        		
+        	}
         },
 
         getName : function () {

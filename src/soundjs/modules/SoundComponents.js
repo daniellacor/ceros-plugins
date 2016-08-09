@@ -2,6 +2,21 @@
 define(['lodash', 'SoundJS', 'modules/helpers', 'modules/SoundComponent'], function (_, createjs, helpers, SoundComponent) {
 	'use strict';	
 
+
+	var handleLoad = function (evt, data) {
+
+
+		console.log(evt);
+
+		var soundComponent = data[evt.id];
+
+		soundComponent.sound.clickEnabled = true;
+        if (soundComponent.sound.hasOwnProperty("background")){
+        	soundComponent.dispatch(soundComponent.sound.background);
+        }
+
+	};
+
 	var SoundComponents = function (cerosComponentCollection) {
 
 		this.sounds = {};
@@ -9,6 +24,7 @@ define(['lodash', 'SoundJS', 'modules/helpers', 'modules/SoundComponent'], funct
 
 		this.cerosComponentCollection = cerosComponentCollection;
 
+		createjs.Sound.on("fileload", handleLoad, null, false, this.sounds); //pass in the sounds obj as "data"	        	
 
 	    _.forEach(this.cerosComponentCollection.components, function (soundComponent, soundComponentIndex) {
             

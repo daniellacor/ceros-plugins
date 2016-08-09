@@ -30,7 +30,7 @@
         paths: { 
             CerosSDK: "//sdk.ceros.com/standalone-player-sdk-v3",        
             SoundJS: "https://code.createjs.com/soundjs-0.6.2.min",
-            loDash: "https://cdn.jsdelivr.net/lodash/4.14.0/lodash.min",
+            lodash: "https://cdn.jsdelivr.net/lodash/4.14.0/lodash.min",
             modules: "//10.0.20.134:8080/Plugins/ceros-plugins/src/soundjs/modules"
         }
         
@@ -39,7 +39,7 @@
     require([
         'CerosSDK', 
         'SoundJS', 
-        'loDash',
+        'lodash',
         'modules/SoundComponents'
         ], function (CerosSDK, createjs, _, SoundComponents) {
         CerosSDK.findExperience().done(function(cerosExperience) {
@@ -98,10 +98,6 @@
             };
 
 
-
-
-
-
             var pluginScriptTag = document.getElementById("ceros-soundjs-plugin");
             var soundTag = pluginScriptTag.getAttribute("soundTag");
             var componentsWithSound = cerosExperience.findComponentsByTag(soundTag);
@@ -122,6 +118,5 @@
 })();
 
 
-
-
+//add background noises using .on(sound load/register
 
