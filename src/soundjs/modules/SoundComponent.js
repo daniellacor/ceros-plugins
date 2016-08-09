@@ -62,6 +62,9 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 		this.payload = soundComponent.getPayload();
 
       	var componentOptions = helpers.optionsForComponent(this.soundComponent, this.soundDefaults);
+     	
+
+//	NOTE Might look into making more efficiend by preventing double loads
      	createjs.Sound.registerSound(this.payload, this.id);
 
         

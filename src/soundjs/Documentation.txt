@@ -1,0 +1,125 @@
+Ceros SoundJs Plugin : Version 0.3.0
+// TODO --> Talk to designers about what the default options should be.
+// TODO --> Add a link parser to change the www.dropbox.com/.... to dl.dropbo.../...
+// TODO --> Should I keep "" marks around tags in the docs?  Will this confuse people?
+
+
+Uses the CreateJs-SoundJs library to enable people using the Ceros Studio to add sounds to their experience.  This plugin gives the user lots of control over audio clips, including play/pause toggle buttons, loop buttons, restart buttons, mute buttons.  These commands can be given globally, such as muting every track on a page.
+
+The sound file must be hosted on a server that allows cross origin requests
+
+How to use this plugin:
+
+To Start:
+Paste the following code into the "Custom HTML" field of the Ceros experience inside Ceros Studio.
+<script id="ceros-soundjs-plugin" src="PASTE LINK HERE" soundTag="playsound"></script>
+
+
+
+
+
+STEP 1: Hosting sound files
+
+In order for a sound file to be played, it must be loaded in the experience.  Unfortunately, the studio does not currently support uploading files directly to the experience so they must be hosted on a server separately.  There are a couple solutions to this problem.
+
+If you have your own server that can host files, make sure that it has cross origin requests enabled.  If not a good solution is hosting the file on dropbox, a free file hosting service.
+
+Steps for hosting on dropbox: 
+
+	1.  Login to dropbox through their website, wwww.dropbox.com (if you do not have an account, create one).
+
+	2.  Upload the mp3 file to dropbox.  Once uploaded, the file will appear in your "files section".
+
+	3.  There will be a "Share" button at the very right side of the file (on the same line).  Click this button.
+
+	4.  In the popup, click "Create a link", located on the right side.  This will be replaced by "Copy link".  Click that.  The link to your mp3 file will appear and is now copied to your clipboard.  This link will be used later so share it!  (Don't worry you can always repeat steps 3 and 4 if you lose the link).
+
+	NOTE: Dropbox will ban links that exceed more than 20 GB worth of downloads per day.  For experiences that are expected to receive lots of traffic, the sound files should be hosted on a cross origin request enabled server that won't limit bandwith.  For internal testing and developing, using dropbox is quick and easy, and more than adequate.
+
+
+
+STEP 2: Adding sound files to your experience!
+
+To add a sound file to your experience you must attach it to a component.  Doing so is very simple!
+
+	1.  Find the component you would like to attach the sound file to.  
+
+	2.  Give it the tag "playsound".  
+
+	3.  Paste the link to the soundfile in the payload.
+
+	Note: Although the sound has been added to the exerpience, nothing will hapen until events are added!
+
+
+
+STEP 3: Adding events to you experience! 
+
+In order for users to interact with your sounds, events must be added to your experience!
+
+	Click Events:  These are added to components, so that when the component is clicked, the event will fire.
+
+	Steps to add a click event:
+
+		1.  Find the component you would like to add an event to.  (This can be the component the sound is attached to, or any other component!).
+
+		2.  Add the tag "sound-click" to the component (this tells the experience to listen for click events on this component).
+
+		3.  Add the tag for the event you would like to happen when the component is clicked.  Listed below are all the possible events.
+
+		OPTIONAL:
+
+			By default, an event will fire on the component it is on (assuming there is also a soundfile on the component).  However, you may want multiple event components connected to the same soundfile.  Allowing for multiple controls of one sound file, such as a pause, play, and restart button.  In order to do so, you must point the event component to the sound file!  There are two ways to do that:
+				1.  The lazy way
+
+
+		EVENTS:
+
+			LOOP:  Plays the sound(s) and sets it to loop indefinitely. 
+			TAG: "event:loop"
+
+			LOOP TOGGLE:  Plays the sound(s) and sets it to loop indefinitely.  Subsequent clicks will play/pause the sound.
+			TAG: "event:loop"
+
+			MUTE:  Toggles the volume on a sound(s).
+			TAG: "event:mute"
+
+			PLAY:  Plays the sound(s).
+			TAG: "event:play"
+
+			PAUSE: Pauses the sound(s).
+			TAG: "event:pause"
+
+			RESET:  Resets and plays the sound(s).
+			TAG: "event:reset"
+
+			TOGGLE:  Plays the sound(s). Subsequent clicks will pause/play the sound(s).
+			TAG: "event:toggle"
+
+			NOTE: If you have ideas for new events, please send them to Andy.  Suggestions are greatly appreciated!
+
+
+		GLOBAL EVENTS:
+
+			All events can be applied globally to every sound in the experience.  In order to do so, change the "event" in the event tag to "eventall".  For example, to add a global mute button, add a component with the tags "sound-click" and "eventall:mute".
+
+
+
+STEP 4: (OPTIONAL) Adding background sounds to your experience.
+
+Background noises added to the experience will play as soon as the sound file has finished loading.
+	
+Steps to add a background sound:
+
+	1.  There are currently 2 options when it comes to background sounds.
+
+		1.  PLAY:  The sound file is played once upon load.
+
+		2.  LOOP:  The sound file is played upon load, and set to loop.
+
+
+
+
+
+
+
+
