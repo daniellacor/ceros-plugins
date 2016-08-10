@@ -34,7 +34,7 @@ Steps for hosting on dropbox:
 
 	4.  In the popup, click "Create a link", located on the right side.  This will be replaced by "Copy link".  Click that.  The link to your mp3 file will appear and is now copied to your clipboard.  This link will be used later so share it!  (Don't worry you can always repeat steps 3 and 4 if you lose the link).
 
-	NOTE: Dropbox will ban links that exceed more than 20 GB worth of downloads per day.  For experiences that are expected to receive lots of traffic, the sound files should be hosted on a cross origin request enabled server that won't limit bandwith.  For internal testing and developing, using dropbox is quick and easy, and more than adequate.
+	NOTE: Dropbox will ban links that exceed more than 20 GB worth of downloads per day.  For experiences that are expected to receive lots of traffic, the sound files should be hosted on a server (cors enabled) that won't limit bandwith.  For internal testing and developing, using dropbox is quick, easy, and more than adequate.
 
 
 
@@ -52,7 +52,7 @@ To add a sound file to your experience you must attach it to a component.  Doing
 
 
 
-STEP 3: Adding events to you experience! 
+STEP 3: Adding sound events to your experience! 
 
 In order for users to interact with your sounds, events must be added to your experience!
 

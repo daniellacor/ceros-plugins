@@ -3,23 +3,27 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 	'use strict';	
 
 
-
+    /**
+     * Custom function for playing sounds
+     * If sound is already playing, and this.interrupt is true, the sound is interrupted and played again
+     */
 	var cerosPlay = function () {
 
   		// var ppc = new createjs.PlayPropsConfig().set({interrupt:createjs.Sound.INTERRUPT_ANY});
-  		console.log(this);
 
   		if (this.interrupt){
-
 	        this.cerosInterrupt();
-
     	}
+
     	this.play();
     	this.active = true;
 	};
 
 
 
+    /**
+     * If sound is already playing, stops sound and plays it from beginning
+     */
 	var cerosInterrupt = function () {
 	    if (this.active){           
         	this.stop();
@@ -29,65 +33,69 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 	};
 
 
-
+    /**
+     * Starts playback without checking for interrupt, used for background noises
+     * @param {CreateJs.Event} evt Event data that triggered this call
+     * @param {CreateJs.AbstractSoundInstance} evt Event data that triggered this call
+     */
 	var backgroundPlay = function (evt, data) {
-		console.log("back play");
         data.play();
         data.active = true;
-
 	};
 
-
+    /**
+     * Starts playback on loop without checking for interrupt, used for background noises
+     */
 	var backgroundLoop = function (evt, data) {
-
-		console.log("back loop");
 		data.loop = -1;
 		data.active = true;
 		data.play();
 	};
 
+	/*
+	 * Class that holds the SoundJs sound Object as well as other options
+	 * Sounds are stored as a CreateJs.AbstractSoundInstance
+	 * Contains every method related to handling playback events
+	 * @param {CerosComponent} cerosComponent The component whose payload/tags will be used to create the SoundComponent
+	 */
+	var SoundComponent = function (cerosComponent) {
 
-	var SoundComponent = function (soundComponent) {
-
+		//Defaults settings for sounds
 		this.soundDefaults = {
-			clickEnabled: false,
+			eventsEnabled: false,
 			active: false,
 			shown: false,
 			start: 0,
             duration: null,
             interrupt: true
 		};
-		this.soundComponent = soundComponent;
-		this.id = soundComponent.id;
-		this.payload = soundComponent.getPayload();
 
-      	var componentOptions = helpers.optionsForComponent(this.soundComponent, this.soundDefaults);
+		this.cerosComponent = cerosComponent;
+		this.id = cerosComponent.id;
+		this.payload = cerosComponent.getPayload();
+
+      	var componentOptions = helpers.optionsForComponent(this.cerosComponent, this.soundDefaults);
      	
 
-//	NOTE Might look into making more efficiend by preventing double loads
+      	// Registers and starts loading of sound file (does not redownload previously loaded files)
      	createjs.Sound.registerSound(this.payload, this.id);
 
-        
-        //SET OFFSET AND DURATION HERE, RATHER THAN PASSING DATA AROUND
-        // this.sounds[soundComponent.id] = createjs.Sound.createInstance(soundComponent.id, componentOptions.start, component.Options.duration);
-        this.sound = createjs.Sound.createInstance(soundComponent.id, componentOptions.start, componentOptions.duration);
-
-
+     	// Creates a sound instance of the loaded file
+        this.sound = createjs.Sound.createInstance(cerosComponent.id, componentOptions.start, componentOptions.duration);
 
 
         //Note, this will not overwrite any original soundComponent options
-        //NOTE: THIS MIGHT NOT WORK DUE TO "this" CHANGING
         this.sound = _.defaults(
 						this.sound,
 						componentOptions
 					);
 
+        // Attaches the cerosPlay and cerosInterrupt function to this.sound
+        // Done to make things neater because dispatchEvent changes the context of this
         this.sound['cerosPlay'] = cerosPlay;
         this.sound['cerosInterrupt'] = cerosInterrupt;
 
-
-
-        this.setEvents(soundComponent.id);
+        this.setEvents();
 
 	};
 
@@ -98,50 +106,45 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
 
 	SoundComponent.prototype = {
 
+        /**
+         * Attaches listeners for every event on this.sound
+         */
+		setEvents : function () {
 
-		setEvents : function (componentId) {
+			// "complete" is a native event, thrown when a sound finishes playing
+	        this.sound.on("complete", this.handleComplete);
 
-
-	        //attaches all default listeners
-	        this.sound.on("complete", this.handleComplete, null, false, componentId);
-	        this.sound.on("mute", this.handleMute, null, false, componentId);
-	        this.sound.on("play", this.handlePlay, null, false, componentId);
-	        this.sound.on("pause", this.handlePause, null, false, componentId);
-	        this.sound.on("reset", this.handleReset, null, false, componentId);
-	        this.sound.on("toggle", this.handleToggle, null, false, componentId);
-	        this.sound.on("loop", this.handleLoop, null, false, componentId).bind(this);
-	        this.sound.on("looptoggle", this.handleLoopToggle, null, false, componentId);
-
-	      
-
+	        // custom events that can be triggered through component events
+	        this.sound.on("mute", this.handleMute);
+	        this.sound.on("play", this.handlePlay);
+	        this.sound.on("pause", this.handlePause);
+	        this.sound.on("reset", this.handleReset);
+	        this.sound.on("toggle", this.handleToggle);
+	        this.sound.on("loop", this.handleLoop);
+	        this.sound.on("looptoggle", this.handleLoopToggle);
 
 	    },
 
- 
-		//Basic mainpulation function used a lot
-        //currently disables interrupt, but can change
-      	// cerosPlay : function(data){
-
-      	// 	var ppc = new createjs.PlayPropsConfig().set({interrupt:createjs.Sound.INTERRUPT_ANY});
-      	// 	console.log(this);
-
-       //      this.play({interrupt:createjs.Sound.INTERRUPT_ANY});
-       //      this.active = true;
-            
-       //  },
 
 
-       // NATIVE EVENTS HANDLERS
-        //cleans up extra data handled by us
-        handleComplete : function(evt, data){
-
+        /**
+         * Called when sound finishes playing.  Is not called when sound loops.
+         * Used to clean up extra stuff not handled natively
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handleComplete : function(evt){
             this.active = false;
         },
 
 
         // EVENT HANDLERS
 
-        handleMute : function(evt, data){
+        /**
+		 * Toggles the volume on a sound
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handleMute : function(evt){
+
             if (this.muted){
                 this.muted = false;
             }
@@ -150,18 +153,30 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
             }
         },
 
-        handlePlay : function(evt, data){
-            this.cerosPlay(data);
+        /**
+		 * Plays the sound
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handlePlay : function(evt){
+            this.cerosPlay();
         },
 
-        handlePause : function(evt, data){
+        /**
+		 * Pauses the sound
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handlePause : function(evt){
             this.paused = true;
         },
 
-        handleToggle : function(evt, data){
+        /**
+		 * Plays the sound. Subsequent clicks will pause/play the sound
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handleToggle : function(evt){
 
             if (!this.active){
-                this.cerosPlay(data);
+                this.cerosPlay();
                 this.active = true;
 
             }
@@ -173,43 +188,60 @@ define(['lodash', 'SoundJS', 'modules/helpers'], function (_, createjs, helpers)
             }
         },
 
-        handleReset : function(evt, data){
+        /**
+		 * Resets and plays the sound from the beginning
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handleReset : function(evt){
+
             if (!this.active){
-                this.cerosPlay(data);
+                this.cerosPlay();
                 this.active = true;
 
             }
             else {            
             	this.stop();
-            	this.active = false; // note this does not fire 
+            	this.active = false; 
             }            
         },
 
-        handleLoop : function(evt, data){
+        /**
+		 * Plays the sound and sets it to loop indefinitely.
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handleLoop : function(evt){
             this.loop = -1;
             this.cerosPlay();
         },
 
-        handleLoopToggle : function(evt, data){
+        /**
+		 * Plays the sound(s) and sets it to loop indefinitely.  Subsequent clicks will play/pause the sound.
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
+        handleLoopToggle : function(evt){
             this.loop = -1;
             this.dispatchEvent("toggle");
         },
 
-        handleStackPlay : function(evt, data){
-            createjs.Sound.cerosPlay(data);
-        },
 
-        // EVENT DISPATCHER
 
+        /**
+		 *	Dispatches the event to this.sound
+		 *
+     	 * @param {CreateJs.Event} evt Event data that triggered this call
+         */
         dispatch : function (evt) {
-        	console.log(this);
-        	// Note, dispatchEvent, sends the object it is called on as "this" to the handle function.
+        	// NOTE: dispatchEvent, sends the object it is called on as "this" to the handle function.
         	// in this case this.sound becomes this in the handle function
-        	if (this.sound.clickEnabled){
+        	if (this.sound.eventsEnabled){
 	        	this.sound.dispatchEvent(evt);        		
         	}
         },
 
+        /**
+		 * If component has name tag, returns name, otherwise returns false
+		 * @returns {String || Boolean}
+         */
         getName : function () {
         	if (this.hasOwnProperty("name")){
         		return this.name;

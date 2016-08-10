@@ -4,14 +4,12 @@
  * @support support@ceros.com
  *
  * This plugin enables people using the Ceros Studio to create an experience
- * that can play a sound when an object is clicked using the SoundJs library
+ * with sounds/background sounds that can be paused/played/looped etc. using the SoundJs library
  * http://www.createjs.com/soundjs
  *
  * The sound file must be hosted on a server that allows cross origin requests
  *
- * To use the plugin: UPDATE
- *   1. Tag a component with 'playsound' in the SDK panel
- *   2. Set the Payload to the URL of the sound file
+ * To use the plugin: READ THE DOCS
  *
  * This plugin is licensed under the MIT license. A copy of this license and
  * the accompanying source code is available at https://github.com/ceros/ceros-plugins
@@ -45,6 +43,11 @@
         CerosSDK.findExperience().done(function(cerosExperience) {
 
 
+            /**
+             * Finds the targets of an event component, based on its tags
+             *
+             * @param {CerosSDK.CerosComponent} component
+             */
             var acquireTargets = function (component) {
 
                 var tags = component.getTags();
@@ -58,15 +61,13 @@
                 });
 
 
-                //must check if each of the targets is an id or name
-                //replaces targets that are names with the component ids
-                
+                // Check if each of the targets is an id or name
                 for (var i = 0; i < targets.length; i++){
+
+                    // If name, replaces with the corresponding sound id
                     if (sounds.nameMatch(targets[i])){
                         targets[i] = sounds.nameMatch(targets[i]);
-
                     }
-
                 }
                 
                 if (targets.length == 0) {
@@ -77,6 +78,13 @@
 
             };
 
+
+            
+            /**
+             * Dispatches the events from the component tags
+             *
+             * @param {CerosSDK.CerosComponent} component
+             */
             var parseEventTags = function (component){
                 var evt = null;
 
@@ -103,10 +111,8 @@
             var componentsWithSound = cerosExperience.findComponentsByTag(soundTag);
             var componentsWithEvent = cerosExperience.findComponentsByTag("sound-click");
 
+            //creates the SoundComponents object that holds all of the soundjs sounds
             var sounds = new SoundComponents(componentsWithSound);
-
-
-
 
             componentsWithEvent.subscribe(CerosSDK.EVENTS.CLICKED, function (component) {
                 parseEventTags(component);
@@ -116,7 +122,4 @@
         });
     });
 })();
-
-
-//add background noises using .on(sound load/register
 
