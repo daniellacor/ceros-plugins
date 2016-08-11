@@ -95,6 +95,16 @@ In order for users to interact with your sounds, events must be added to your ex
 			TOGGLE:  Plays the sound(s). Subsequent clicks will pause/play the sound(s).
 			TAG: "event:toggle"
 
+			FAST FORWARD:  Fast forwards the sound by 1 second, whether it's playing or paused.  Does not play/unpause sounds.
+			TAG: "event:fastforward"
+				NOTE: (instructions on how to change fastforward interval in advanced section)
+
+			REWIND:  Fast forwards the sound by 1 second, whether it's playing or paused.  Does not play/unpause sounds.
+			TAG: "event:rewind"
+				NOTE: (instructions on how to change rewind interval in advanced section)
+
+
+
 			NOTE: If you have ideas for new events, please send them to Andy.  Suggestions are greatly appreciated!
 
 
@@ -119,6 +129,25 @@ Steps to add a background sound:
 
 
 
+
+
+ADVANCED COMMANDS(Enter if you dare):
+
+If you would like to really finetune your sound and/or event settings, much can be done using tags alone!  This section will tell you which settings you can change through tags, and what those changes do.
+
+BE WARNED, CHANGING THESE MAY CAUSE UNEXPECTED BEHAVIOR
+
+	Settings can be changed using the formate, setting:your-setting.  
+
+	Settings you may change:
+
+		START TIME : Default = 0.  To change the start time of your sound you may enter "start:your-start-time", i.e. "start:2000". The second part must be a number, and in milliseconds NOT seconds. (Note to self: there is no error checking for this, currently)
+
+		DURATION : not yet implemented.
+
+		FAST FORWARD INTERVAL : Default = 1000.
+
+		REWIND INTERVAL : Default = 1000.  TH
 
 
 
