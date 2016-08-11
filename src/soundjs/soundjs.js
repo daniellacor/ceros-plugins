@@ -1,48 +1,30 @@
 /**
- * Ceros Plugin for SoundJS
- * @version !!!!!!! UPDATE was 0.2.0
- * @support support@ceros.com
- *
- * This plugin enables people using the Ceros Studio to create an experience
- * with sounds/background sounds that can be paused/played/looped etc. using the SoundJs library
- * http://www.createjs.com/soundjs
- *
- * The sound file must be hosted on a server that allows cross origin requests
- *
- * To use the plugin: READ THE DOCS
- *
- * This plugin is licensed under the MIT license. A copy of this license and
- * the accompanying source code is available at https://github.com/ceros/ceros-plugins
+ * Ceros Plugin for HowlerJs
  */
 
 (function() {
 
     require.config({
 
-        shim: {
-            SoundJS: {
-                exports: 'createjs'
-            }
-        },
 
         paths: { 
             CerosSDK: "//sdk.ceros.com/standalone-player-sdk-v3",        
-            SoundJS: "https://code.createjs.com/soundjs-0.6.2.min",
+            Howler : "https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.0/howler",
             lodash: "https://cdn.jsdelivr.net/lodash/4.14.0/lodash.min",
-            modules: "//10.0.20.134:8080/Plugins/ceros-plugins/src/soundjs/modules"
+            modules: "http://10.0.20.134:8080/Experiences/HowlerTest/modules"
         }
         
     });
 
     require([
         'CerosSDK', 
-        'SoundJS', 
+        'Howler', 
         'lodash',
         'modules/SoundComponents'
-        ], function (CerosSDK, createjs, _, SoundComponents) {
+        ], function (CerosSDK, Howler, _, SoundComponents) {
         CerosSDK.findExperience().done(function(cerosExperience) {
 
-
+               
             /**
              * Finds the targets of an event component, based on its tags
              *
@@ -106,13 +88,14 @@
             };
 
 
-            var pluginScriptTag = document.getElementById("ceros-soundjs-plugin");
-            var soundTag = pluginScriptTag.getAttribute("soundTag");
-            var componentsWithSound = cerosExperience.findComponentsByTag(soundTag);
+            // var pluginScriptTag = document.getElementById("ceros-soundjs-plugin");
+            // var soundTag = pluginScriptTag.getAttribute("soundTag");
+            var componentsWithSound = cerosExperience.findComponentsByTag("playsound");
             var componentsWithEvent = cerosExperience.findComponentsByTag("sound-click");
 
             //creates the SoundComponents object that holds all of the soundjs sounds
             var sounds = new SoundComponents(componentsWithSound);
+            console.log(sounds);
 
             componentsWithEvent.subscribe(CerosSDK.EVENTS.CLICKED, function (component) {
                 parseEventTags(component);
