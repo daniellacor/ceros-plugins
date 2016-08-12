@@ -18,9 +18,13 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 			shown: false,
 			start: 0, //in milliseconds
 			duration: null,
-			interrupt: true,
-			fastforwardtime: 1000, //in milliseconds
-			rewindtime: 1000 //in milliseconds
+			interrupt: false,
+			fastforwardtime: 3000, //in milliseconds
+			rewindtime: 3000, //in milliseconds
+			html5: false, //if true, forces html5, needed for streams
+			stream: false,
+			format: [],
+
 		};
 
 
@@ -56,6 +60,8 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		this.soundOptions.fastforwardtime /= 1000;
 		this.soundOptions.rewindtime /= 1000;
 
+
+
 		// Set background looping/playing settings
 		var autoplaySetting = false;
 		var loopSetting = false;
@@ -70,11 +76,20 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		}
 
 
+		// Set stream settings if it is a stream
+		if (this.soundOptions.stream){
+			this.soundOptions.html5 = true;
+			this.soundOptions.format = ['mp3'];
+		}
+
+
 		// Creates a sound instance of the loaded file
 		this.sound = new Howl({
             src: [this.url],
             autoplay: autoplaySetting,
             loop: loopSetting,
+            html5: this.soundOptions.html5,
+            format: this.soundOptions.format,
         });
 
 
@@ -100,6 +115,7 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		this.funcs["looptoggle"] = this.handleLoopToggle.bind(this);
 		this.funcs["fastforward"] = this.handleFastForward.bind(this);
 		this.funcs["rewind"] = this.handleRewind.bind(this);
+		this.funcs["stop"] = this.handleStop.bind(this);
 
 	};
 
@@ -216,7 +232,7 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		 * Fast forwards the sound by 1 second, whether it's playing or paused.  Does not play/unpause sounds.
 		 */
 		handleFastForward: function() {
-			var jumpTime = this.soundOptions.fastforwardtime / 1000; // convert to seconds
+			var jumpTime = this.soundOptions.fastforwardtime; 
 			var currentTime = this.sound.seek();
 			this.sound.seek(currentTime + jumpTime);
 		},
@@ -225,8 +241,8 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		 * Fast forwards the sound by 1 second, whether it's playing or paused.  Does not play/unpause sounds.
 		 */
 		handleRewind: function() {
-			var startTime = this.soundOptions.start; // convert to seconds
-			var jumpTime = this.soundOptions.fastforwardtime / 1000; // convert to seconds
+			var startTime = this.soundOptions.start; 
+			var jumpTime = this.soundOptions.rewindtime; 
 			var currentTime = this.sound.seek();
 			if ((currentTime - jumpTime) >= startTime) {
 				this.sound.seek(currentTime - jumpTime);
@@ -234,6 +250,9 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 			}
 		},
 
+		handleStop: function() {
+			this.sound.stop();
+		},
 
 		/**
 		 *	Dispatches the event to this.sound

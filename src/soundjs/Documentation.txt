@@ -126,6 +126,8 @@ Steps to add a background sound:
 
 
 
+STEP 5: Adding streams to your experience.
+
 
 
 
@@ -149,6 +151,7 @@ BE WARNED, CHANGING THESE MAY CAUSE UNEXPECTED BEHAVIOR
 
 		REWIND INTERVAL : Default = 1000.
 		EXAMPLE: "rewindtime:2000"
+
 
 
 
