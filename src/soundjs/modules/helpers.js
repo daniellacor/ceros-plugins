@@ -41,16 +41,17 @@ define(['lodash'], function(_) {
 
                 // If tag matched naming convention
                 if (matches) {
-                    //needs some exceptions
-                    if (matches[1] == "start" || matches[1] == "duration") {
-                        matches[2] = parseInt(matches[2]);
-                    } else if (matches[1] == "interrupt") {
-                        if (matches[2] == "false") {
-                            matches[2] = false;
-                        } else {
-                            matches[2] = true;
-                        }
+
+                    var val = matches[2];
+
+                    //converts to bool if string is 'true' or 'false'
+                    matches[2] = val === 'true' || (val === 'false' ? false : val);
+
+                    //if string is a number, parses to int
+                    if (!isNaN(val)) {
+                        matches[2] = parseInt(matches[2], 10);
                     }
+
                     result[matches[1]] = matches[2];
                 }
             }

@@ -3,39 +3,18 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 
 
 
-	/**
-	 * Starts playback without checking for interrupt, used for background noises
-	 * @param {CreateJs.Event} evt Event data that triggered this call
-	 * @param {CreateJs.AbstractSoundInstance} evt Event data that triggered this call
-	 */
-	var backgroundPlay = function(evt, data) {
-		data.play();
-		data.active = true;
-	};
-
-	/**
-	 * Starts playback on loop without checking for interrupt, used for background noises
-	 */
-	var backgroundLoop = function(evt, data) {
-		data.loop = -1;
-		data.active = true;
-		data.play();
-	};
-
 	/*
 	 * Class that holds the SoundJs sound Object as well as other options
 	 * Sounds are stored as a CreateJs.AbstractSoundInstance
 	 * Contains every method related to handling playback events
 	 * @param {CerosComponent} cerosComponent The component whose payload/tags will be used to create the SoundComponent
 	 */
-	var SoundComponent = function(cerosComponent, howl) {
+	var SoundComponent = function(cerosComponent) {
 
 		this.funcs = {};
 
 		//Defaults settings for sounds
 		this.soundDefaults = {
-			eventsEnabled: false,
-			active: false,
 			shown: false,
 			start: 0, //in milliseconds
 			duration: null,
@@ -44,31 +23,70 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 			rewindtime: 1000 //in milliseconds
 		};
 
+
 		this.cerosComponent = cerosComponent;
 		this.id = cerosComponent.id;
-		this.payload = cerosComponent.getPayload();
+
+		var url = cerosComponent.getPayload();
+
+
+		// Used for fixing download link
+		// Removes any parameters so correct file format is discovered
+		// www.dropbox.com links do not work, instead that must be changed to dl.dropboxusercontent.com
+		// @param {String} url Url to be fixed
+
+		var fixedUrl = url.split('?')[0];
+		var dropboxUrl = "www.dropbox.com";
+		var dropboxFix = "dl.dropboxusercontent.com";
+		var dropboxLoc = fixedUrl.indexOf("www.dropbox.com");
+		//if dropbox link, swap out correct link
+		if (dropboxLoc > -1){
+			fixedUrl = fixedUrl.slice(0, dropboxLoc) + 
+						dropboxFix +
+						fixedUrl.slice(dropboxLoc + dropboxUrl.length, fixedUrl.length);
+		}
+		this.url = fixedUrl;
 
 
 		var componentOptions = helpers.optionsForComponent(this.cerosComponent, this.soundDefaults);
 		this.soundOptions = componentOptions;
 
+		// This converts time options from ms to seconds
+		this.soundOptions.start /= 1000;
+		this.soundOptions.fastforwardtime /= 1000;
+		this.soundOptions.rewindtime /= 1000;
+
+		// Set background looping/playing settings
+		var autoplaySetting = false;
+		var loopSetting = false;
+		if (this.soundOptions.hasOwnProperty("background")){
+			if (this.soundOptions.background == "play"){
+				autoplaySetting = true;
+			}
+			else if (this.soundOptions.background == "loop"){
+				autoplaySetting = true;
+				loopSetting = true;
+			}
+		}
+
+
 		// Creates a sound instance of the loaded file
-		this.sound = howl;
+		this.sound = new Howl({
+            src: [this.url],
+            autoplay: autoplaySetting,
+            loop: loopSetting,
+        });
 
-		//Note, this will not overwrite any original soundComponent options
-		//    this.soundOptions = _.defaults(
-		// 	this.sound,
-		// 	componentOptions
-		// );
 
-		// Attaches the cerosPlay and cerosInterrupt function to this.sound
+
+		// Attaches the play and interrupt function to this.sound
 		// Done to make things neater because dispatchEvent changes the context of this
 
 		//NOTE this is very unreliable when in background because browsers throttle background tabs
 		// this messes up timeouts and similar stuff
 		this.sound.on('end', function() {
-			if (this.soundOptions != 0) {
-				this.sound.seek(this.soundOptions.start / 1000);
+			if (this.soundOptions !== 0) {
+				this.sound.seek(this.soundOptions.start);
 			}
 		}.bind(this));
 
@@ -97,19 +115,17 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		 * Custom function for playing sounds
 		 * If sound is already playing, and this.interrupt is true, the sound is interrupted and played again
 		 */
-		cerosPlay: function() {
+		play: function() {
 
-
-			var tes = this.sound.seek();
 
 			// var ppc = new createjs.PlayPropsConfig().set({interrupt:createjs.Sound.INTERRUPT_ANY});
 
-			var startTime = this.soundOptions.start / 1000 //ms to seconds
+			var startTime = this.soundOptions.start; //ms to seconds
 			if (this.sound.seek() < startTime) {
 				this.sound.seek(startTime); //sets the seek to start time IN SECONDS
 			}
 			if (this.soundOptions.interrupt) {
-				this.cerosInterrupt();
+				this.interrupt();
 			}
 
 			if (!this.sound.playing()) {
@@ -123,20 +139,18 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		/**
 		 * If sound is already playing, stops sound and plays it from beginning
 		 */
-		cerosInterrupt: function() {
+		interrupt: function() {
 			if (this.sound.playing()) {
 				this.sound.stop();
-				this.cerosPlay();
+				this.play();
 			}
 		},
-
-
+		
 
 		// EVENT HANDLERS
 
 		/**
 		 * Toggles the volume on a sound
-		 * @param {CreateJs.Event} evt Event data that triggered this call
 		 */
 
 		//TODO Must check to see if it toggles or not
@@ -150,15 +164,13 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 
 		/**
 		 * Plays the sound
-		 * @param {CreateJs.Event} evt Event data that triggered this call
 		 */
 		handlePlay: function() {
-			this.cerosPlay();
+			this.play();
 		},
 
 		/**
 		 * Pauses the sound
-		 * @param {CreateJs.Event} evt Event data that triggered this call
 		 */
 		handlePause: function() {
 			this.sound.pause();
@@ -166,65 +178,54 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 
 		/**
 		 * Plays the sound. Subsequent clicks will pause/play the sound
-		 * @param {CreateJs.Event} evt Event data that triggered this call
 		 */
 		handleToggle: function() {
 
 			if (this.sound.playing()) {
 				this.sound.pause();
-
 			}
-			// else if (this.sound.seek() == 0){
-			//     this.cerosPlay();
-			// }
-			// else{
-			//     this.sound.play();
-			// }
 			else {
-				this.cerosPlay();
+				this.play();
 			}
 		},
 
 		/**
 		 * Resets and plays the sound from the beginning
-		 * @param {CreateJs.Event} evt Event data that triggered this call
 		 */
-		//TODO perhaps use seek instead, to preserve pause state
 		handleReset: function() {
-
-			if (this.sound.playing()) {
-				this.sound.stop();
-			}
-			this.cerosPlay();
+			this.sound.seek(this.soundOptions.start);
 		},
 
 		/**
 		 * Plays the sound and sets it to loop indefinitely.
-		 * @param {CreateJs.Event} evt Event data that triggered this call
 		 */
 		handleLoop: function() {
 			this.sound.loop(true);
-			this.cerosPlay();
+			this.play();
 		},
 
 		/**
 		 * Plays the sound(s) and sets it to loop indefinitely.  Subsequent clicks will play/pause the sound.
-		 * @param {CreateJs.Event} evt Event data that triggered this call
 		 */
 		handleLoopToggle: function() {
 			this.sound.loop(true);
 			this.handleToggle();
 		},
 
+		/**
+		 * Fast forwards the sound by 1 second, whether it's playing or paused.  Does not play/unpause sounds.
+		 */
 		handleFastForward: function() {
 			var jumpTime = this.soundOptions.fastforwardtime / 1000; // convert to seconds
 			var currentTime = this.sound.seek();
 			this.sound.seek(currentTime + jumpTime);
 		},
 
-
+		/**
+		 * Fast forwards the sound by 1 second, whether it's playing or paused.  Does not play/unpause sounds.
+		 */
 		handleRewind: function() {
-			var startTime = this.soundOptions.start / 1000; // convert to seconds
+			var startTime = this.soundOptions.start; // convert to seconds
 			var jumpTime = this.soundOptions.fastforwardtime / 1000; // convert to seconds
 			var currentTime = this.sound.seek();
 			if ((currentTime - jumpTime) >= startTime) {
@@ -241,12 +242,8 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		 */
 		dispatch: function(func) {
 
-			//TODO if this does not work, just run through if statements to dispatch function
-
-
 			// NOTE: dispatchEvent, sends the object it is called on as "this" to the handle function.
 			// in this case this.sound becomes this in the handle function
-			// if (this.sound.eventsEnabled && this.hasOwnProperty(func)){
 			if (this.funcs.hasOwnProperty(func)) {
 				this.funcs[func]();
 			}
@@ -254,13 +251,13 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 
 		/**
 		 * If component has name tag, returns name, otherwise returns false
-		 * @returns {String || Boolean}
+		 * @returns {String || null}
 		 */
 		getName: function() {
 			if (this.soundOptions.hasOwnProperty("name")) {
 				return this.soundOptions.name;
 			}
-			return false;
+			return null;
 		}
 
 

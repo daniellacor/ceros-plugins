@@ -3,18 +3,29 @@
  */
 
 (function() {
+    'use strict';
+
+
+    //NOTE changed to not use jquery
+
+    var scriptTag = document.getElementById("ceros-soundjs-plugin");
+
+    // Calculate an absolute URL for our modules, so they're not loaded from view.ceros.com
+    var path = scriptTag.getAttribute("src").split('?')[0];
+    var absUrl = path.split('/').slice(0, -1).join('/') +'/';
 
     require.config({
-
 
         paths: {
             CerosSDK: "//sdk.ceros.com/standalone-player-sdk-v3",
             Howler: "https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.0/howler",
             lodash: "https://cdn.jsdelivr.net/lodash/4.14.0/lodash.min",
-            modules: "http://10.0.20.134:8080/Experiences/HowlerTest/modules"
+            modules: absUrl + "modules"
         }
 
     });
+
+
 
     require([
         'CerosSDK',
@@ -25,12 +36,23 @@
         CerosSDK.findExperience().done(function(cerosExperience) {
 
 
+
+            var componentsWithSound = cerosExperience.findComponentsByTag("playsound");
+            var componentsWithEvent = cerosExperience.findComponentsByTag("sound-click");
+
+            //creates the SoundComponents object that holds all of the soundjs sounds
+            var sounds = new SoundComponents(componentsWithSound);
+
+
+
             /**
-             * Finds the targets of an event component, based on its tags
+             * Finds the id's of all the sounds the event will fire on
+             * Targets taken from component tags
              *
              * @param {CerosSDK.CerosComponent} component
+             * @returns {Array}
              */
-            var acquireTargets = function(component) {
+            var getTargetComponentIds = function(component) {
 
                 var tags = component.getTags();
                 var targets = [];
@@ -42,17 +64,17 @@
                     }
                 });
 
-
                 // Check if each of the targets is an id or name
                 for (var i = 0; i < targets.length; i++) {
 
                     // If name, replaces with the corresponding sound id
-                    if (sounds.nameMatch(targets[i])) {
+                    if (sounds.nameMatch(targets[i]) !== null) {
                         targets[i] = sounds.nameMatch(targets[i]);
                     }
                 }
 
-                if (targets.length == 0) {
+                // If no proper targets were found, returns own component id as target
+                if (targets.length === 0) {
                     targets.push(component.id);
                 }
 
@@ -63,41 +85,32 @@
 
 
             /**
-             * Dispatches the events from the component tags
+             * Reads tags of an event component, and dispatches the proper event(s)
              *
              * @param {CerosSDK.CerosComponent} component
              */
-            var parseEventTags = function(component) {
-                var evt = null;
+            var parseEventComponentTags = function(component) {
+                var evtName = null;
 
                 var tags = component.getTags();
 
-                var soundIds = acquireTargets(component);
+                var soundIds = getTargetComponentIds(component);
 
                 _.forEach(tags, function(value, key) {
                     if (value.indexOf("event:") > -1) {
-                        evt = value.slice(6, value.length);
-                        sounds.dispatch(evt, soundIds);
+                        evtName = value.slice(6, value.length);
+                        sounds.dispatch(evtName, soundIds);
                     } else if (value.indexOf("eventall:") > -1) {
-                        evt = value.slice(9, value.length);
-                        sounds.dispatchAll(evt);
+                        evtName = value.slice(9, value.length);
+                        sounds.dispatchAll(evtName);
                     }
 
                 });
             };
 
 
-            // var pluginScriptTag = document.getElementById("ceros-soundjs-plugin");
-            // var soundTag = pluginScriptTag.getAttribute("soundTag");
-            var componentsWithSound = cerosExperience.findComponentsByTag("playsound");
-            var componentsWithEvent = cerosExperience.findComponentsByTag("sound-click");
-
-            //creates the SoundComponents object that holds all of the soundjs sounds
-            var sounds = new SoundComponents(componentsWithSound);
-            console.log(sounds);
-
             componentsWithEvent.subscribe(CerosSDK.EVENTS.CLICKED, function(component) {
-                parseEventTags(component);
+                parseEventComponentTags(component);
             });
 
 

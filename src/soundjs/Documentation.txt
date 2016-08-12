@@ -1,8 +1,6 @@
 Ceros SoundJs Plugin : Version 0.3.0
-// TODO --> Talk to designers about what the default options should be.
-// TODO --> Add a link parser to change the www.dropbox.com/.... to dl.dropbo.../...
-// TODO --> Should I keep "" marks around tags in the docs?  Will this confuse people?
 
+NOTE: Send any suggestions or bug reports to Andy the intern :) good luck and have fun!
 
 Uses the CreateJs-SoundJs library to enable people using the Ceros Studio to add sounds to their experience.  This plugin gives the user lots of control over audio clips, including play/pause toggle buttons, loop buttons, restart buttons, mute buttons.  These commands can be given globally, such as muting every track on a page.
 
@@ -39,6 +37,7 @@ Steps for hosting on dropbox:
 
 
 STEP 2: Adding sound files to your experience!
+(NOTE: Currently, only click events are supported, but support for other events are being developed!)
 
 To add a sound file to your experience you must attach it to a component.  Doing so is very simple!
 
@@ -105,7 +104,6 @@ In order for users to interact with your sounds, events must be added to your ex
 
 
 
-			NOTE: If you have ideas for new events, please send them to Andy.  Suggestions are greatly appreciated!
 
 
 		GLOBAL EVENTS:
@@ -124,7 +122,7 @@ Steps to add a background sound:
 
 		1.  PLAY:  The sound file is played once upon load.
 
-		2.  LOOP:  The sound file is played upon load, and set to loop.
+		2.  LOOP:  The sound file is played upon load, and set to loop. (preferably don't use sounds where you've changed the start time in the experience.  Currently, the first time it is played it will ignore the modified start time).
 
 
 
@@ -142,12 +140,17 @@ BE WARNED, CHANGING THESE MAY CAUSE UNEXPECTED BEHAVIOR
 	Settings you may change:
 
 		START TIME : Default = 0.  To change the start time of your sound you may enter "start:your-start-time", i.e. "start:2000". The second part must be a number, and in milliseconds NOT seconds. (Note to self: there is no error checking for this, currently)
+		EXAMPLE: "start:3000"
 
 		DURATION : not yet implemented.
 
 		FAST FORWARD INTERVAL : Default = 1000.
+		EXAMPLE: "fastforwardtime:3500"
 
-		REWIND INTERVAL : Default = 1000.  TH
+		REWIND INTERVAL : Default = 1000.
+		EXAMPLE: "rewindtime:2000"
+
+
 
 
 
