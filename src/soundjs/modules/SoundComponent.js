@@ -24,6 +24,8 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 			html5: false, //if true, forces html5, needed for streams
 			stream: false,
 			format: [],
+			volume: 100,  //percentage
+			rate: 100,	//percentage
 
 		};
 
@@ -54,11 +56,18 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 
 		var componentOptions = helpers.optionsForComponent(this.cerosComponent, this.soundDefaults);
 		this.soundOptions = componentOptions;
+		// Parsing in the sound options allows for more customization in the studio
+		// This does allow for clients to break a couple things, but they would have to set out to do so
+		// Only easy one is i
 
 		// This converts time options from ms to seconds
 		this.soundOptions.start /= 1000;
 		this.soundOptions.fastforwardtime /= 1000;
 		this.soundOptions.rewindtime /= 1000;
+
+		// This converts percentages to decimals
+		this.soundOptions.volume /= 100;
+		this.soundOptions.rate /= 100;
 
 
 
@@ -76,10 +85,19 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		}
 
 
-		// Set stream settings if it is a stream
+		//If format is specified, must be set as an array
+		if (this.soundOptions.format.length !== 0){
+			this.soundOptions.format = [this.soundOptions.format];
+		}
+
+		// Set proper stream settings if it is a stream
 		if (this.soundOptions.stream){
+
 			this.soundOptions.html5 = true;
-			this.soundOptions.format = ['mp3'];
+			this.soundOptions.preload = false;
+			if (this.soundOptions.format.length === 0){
+				this.soundOptions.format = ['mp3']; //defaults to mp3 files for streams
+			}
 		}
 
 
@@ -90,6 +108,9 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
             loop: loopSetting,
             html5: this.soundOptions.html5,
             format: this.soundOptions.format,
+            volume: this.soundOptions.volume,
+            rate: this.soundOptions.rate,
+            preload: this.soundOptions.preload,
         });
 
 
@@ -134,8 +155,13 @@ define(['lodash', 'Howler', 'modules/helpers'], function(_, Howler, helpers) {
 		play: function() {
 
 
-			// var ppc = new createjs.PlayPropsConfig().set({interrupt:createjs.Sound.INTERRUPT_ANY});
-
+			if (this.soundOptions.stream){
+				this.sound.load();
+				this.sound.on('load', function(){
+					this.soundOptions.stream = false;
+					this.play();
+				}.bind(this));
+			}
 			var startTime = this.soundOptions.start; //ms to seconds
 			if (this.sound.seek() < startTime) {
 				this.sound.seek(startTime); //sets the seek to start time IN SECONDS

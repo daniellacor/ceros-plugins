@@ -112,7 +112,19 @@ In order for users to interact with your sounds, events must be added to your ex
 
 
 
-STEP 4: (OPTIONAL) Adding background sounds to your experience.
+
+
+
+
+
+
+
+
+
+
+
+
+STEP 5: (OPTIONAL) Adding background sounds to your experience.
 
 Background noises added to the experience will play as soon as the sound file has finished loading.
 	
@@ -126,18 +138,33 @@ Steps to add a background sound:
 
 
 
-STEP 5: Adding streams to your experience.
+STEP 6: (OPTIONAL) Adding streams to your experience.
+
+Streams can be easily added with just a couple of extra tags.
+
+Steps to add a stream:
+	
+	1.  Follow the above steps for adding a normal sound, making sure to add the url of the source of the stream to the payload.
+
+	2.  Add the tag "stream:true" to the tags of the component.
+
+	3.  Make sure an event is attached, "event:toggle" is recommended for streams.
 
 
 
 
-ADVANCED COMMANDS(Enter if you dare):
+
+
+
+
+STEP 4: Sound settings
+
 
 If you would like to really finetune your sound and/or event settings, much can be done using tags alone!  This section will tell you which settings you can change through tags, and what those changes do.
 
 BE WARNED, CHANGING THESE MAY CAUSE UNEXPECTED BEHAVIOR
 
-	Settings can be changed using the formate, setting:your-setting.  
+	Settings can be changed using the format, setting:your-setting.  
 
 	Settings you may change:
 
@@ -151,6 +178,10 @@ BE WARNED, CHANGING THESE MAY CAUSE UNEXPECTED BEHAVIOR
 
 		REWIND INTERVAL : Default = 1000.
 		EXAMPLE: "rewindtime:2000"
+
+		VOLUME:
+
+		PLAYBACK RATE: 
 
 
 
