@@ -102,7 +102,13 @@ In order for users to interact with your sounds, events must be added to your ex
 			TAG: "event:rewind"
 				NOTE: (instructions on how to change rewind interval in advanced section)
 
+			FADE IN: 
+			TAG: "event:fadein"
+				NOTE: (instructions on how to change fade in interval in advanced section)
 
+			FADE OUT:
+			TAG: "event:fadeout"
+				NOTE: (instructions on how to change fade out interval in advanced section)
 
 
 
@@ -116,15 +122,7 @@ In order for users to interact with your sounds, events must be added to your ex
 
 
 
-
-
-
-
-
-
-
-
-STEP 5: (OPTIONAL) Adding background sounds to your experience.
+STEP 4: (OPTIONAL) Adding background sounds to your experience.
 
 Background noises added to the experience will play as soon as the sound file has finished loading.
 	
@@ -138,7 +136,7 @@ Steps to add a background sound:
 
 
 
-STEP 6: (OPTIONAL) Adding streams to your experience.
+STEP 5: (OPTIONAL) Adding streams to your experience.
 
 Streams can be easily added with just a couple of extra tags.
 
@@ -156,9 +154,7 @@ Steps to add a stream:
 
 
 
-
-STEP 4: Sound settings
-
+SOUND SETTINGS
 
 If you would like to really finetune your sound and/or event settings, much can be done using tags alone!  This section will tell you which settings you can change through tags, and what those changes do.
 
@@ -182,6 +178,9 @@ BE WARNED, CHANGING THESE MAY CAUSE UNEXPECTED BEHAVIOR
 		VOLUME:
 
 		PLAYBACK RATE: 
+
+
+
 
 
 

@@ -20,12 +20,28 @@ define([
         // Object to hold all of the name:id pairs
         this.names = {};
 
+        // Holds urls that are already loading, improves load times/ bandwith drastically
+        var cachedUrls = [];
+
 
         this.cerosComponentCollection = cerosComponentCollection;
 
         //TODO check what happens with empty payload
         _.forEach(this.cerosComponentCollection.components, function(soundComponent, soundComponentIndex) {
-            this.sounds[soundComponent.id] = new SoundComponent(soundComponent);
+
+
+
+            var preload = true;
+            var url = soundComponent.getPayload();
+
+            // If the url is being loaded elsewhere, cancels preload
+            if (cachedUrls.indexOf(url) > -1){
+                preload = false;
+            }
+            else {
+                cachedUrls.push(url);                
+            }
+            this.sounds[soundComponent.id] = new SoundComponent(soundComponent, preload);
 
             var name = this.sounds[soundComponent.id].getName();
 
