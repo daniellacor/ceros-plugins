@@ -70,3 +70,7 @@ All lead associations will be based on the domain of the experience being viewed
 <script id="ceros-marketo-munchkin-plugin" src="//sdk.ceros.com/marketo-munchkin/main-v0.js" accountId="AAA-111-BBB"></script>
 ```
 2. Replace the value of the accountId attribute with your marketo munchkin Id
+
+## Youtube Pauser Plugin
+
+1. Follow instructions here: [Youtube Pause Doc](https://docs.google.com/a/ceros.com/document/d/1qFUz8y3Ucw0aimUWXNFVNW2bZTM7cfiMcOP17tK1haE/edit?usp=sharing)
