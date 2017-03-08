@@ -73,4 +73,8 @@ All lead associations will be based on the domain of the experience being viewed
 
 ## Youtube Pauser Plugin
 
+Uses the Youtube API to pause and play videos iframed in HTML embed objects.
+
+### How to use this plugin:
+
 1. Follow instructions here: [Youtube Pause Doc](https://docs.google.com/a/ceros.com/document/d/1qFUz8y3Ucw0aimUWXNFVNW2bZTM7cfiMcOP17tK1haE/edit?usp=sharing)
